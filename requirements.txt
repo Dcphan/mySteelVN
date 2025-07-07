@@ -1,0 +1,7 @@
+fastapi == 0.115.11
+pandas == 2.2.3
+numpy == 1.26.4
+xlsxwriter == 3.2.5
+uvicorn == 0.34.0
+SQLAlchemy == 2.0.39
+psycopg2-binary == 2.9.10
