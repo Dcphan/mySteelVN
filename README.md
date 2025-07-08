@@ -7,9 +7,11 @@
 - 📊 Hiển thị biểu đồ Pie và Line để trực quan hóa dữ liệu
 - 📋 Bảng tổng hợp dữ liệu theo tháng
 
-> 📁 Repo GitHub: https://github.com/Dcphan/mySteelVN
+> 📁 Repo GitHub: https://github.com/Dcphan/mySteelVN 
 
 ---
+
+chỉ cần chạy Virtual Environment khi Test để dễ dàng xóa các Libraries vừa tải về.
 
 ## 🌐 Các Trang Cần Test
 
@@ -63,4 +65,25 @@ npm -v
 ```bash
 npm install
 ```
+### 5. Chạy ứng dụng
+```bash
+python backend\main.py`
+```
+
+### 6. Xóa Môi Trường Ảo (khi không dùng nữa)
+Thoát môi trường ảo:
+
+```bash
+deactivate
+```
+
+Xóa thư mục venv:
+
+Trên Windows:
+
+```bash
+rd /s /q venv
+```
+
+
 
