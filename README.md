@@ -29,6 +29,7 @@
 ```bash
 git clone https://github.com/Dcphan/mySteelVN.git
 cd mySteelVN
+```
 
 Tạo Virtual Environment (môi trường ảo)
 bash
