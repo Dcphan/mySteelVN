@@ -31,16 +31,36 @@ git clone https://github.com/Dcphan/mySteelVN.git
 cd mySteelVN
 ```
 
-Tạo Virtual Environment (môi trường ảo)
-bash
-Copy
-Edit
+### 2. Tạo Virtual Environment (môi trường ảo)
+```bash
 python -m venv venv
-Kích hoạt môi trường ảo:
+Kích hoạt môi trường ảo:```
 
 Windows:
-
-bash
-Copy
-Edit
+```bash
 venv\Scripts\activate
+```
+✅ Khi kích hoạt thành công, bạn sẽ thấy dấu (venv) ở đầu dòng lệnh terminal.
+
+### 3. Cài đặt các thư viện Python
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Cài đặt Node.js
+
+1. Cài đặt Node.js và npm
+Tải tại: https://nodejs.org/
+
+Kiểm tra cài đặt:
+
+```bash
+node -v
+npm -v
+```
+
+2. Cài thư viện frontend (nếu có file package.json)
+```bash
+npm install
+```
+
