@@ -1,0 +1,162 @@
+/* General Body and Font Styling */
+body {
+    font-family: 'Inter', sans-serif; /* A clean, modern font */
+    background-color: #f0f2f5; /* A light grey background */
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+/* Main Container for the Dashboard */
+#main-container {
+    width: 100%;
+    max-width: 900px; /* Max width for larger screens */
+    background-color: #ffffff;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+/* Dashboard Title */
+h1 {
+    color: #1a2c4e; /* A deep, professional blue */
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 0;
+    margin-bottom: 2rem;
+}
+
+/* Product Selection Area */
+.product-select {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem; /* Spacing between checkboxes */
+    justify-content: center;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    margin-bottom: 1.5rem;
+}
+
+.product-select label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.product-select input[type="checkbox"] {
+    margin-right: 0.5rem;
+    width: 16px;
+    height: 16px;
+    /* Custom checkbox style */
+    accent-color: #007bff; 
+}
+
+/* Input Group for Date Selection */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.input-group input[type="month"] {
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    background-color: #fff;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group input[type="month"]:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Main Action Button */
+button {
+    display: block;
+    width: 100%;
+    max-width: 250px;
+    margin: 0 auto 1.5rem auto; /* Centered with bottom margin */
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+
+/* Status Text */
+#text {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    min-height: 20px; /* Reserve space to prevent layout shifts */
+    margin-bottom: 1rem;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    max-height: 450px; /* Control the max height */
+    margin-top: 1rem;
+}
+
+/* Responsive Design for smaller screens */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    #main-container {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .product-select {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+
+    button {
+        padding: 0.9rem;
+    }
+}

@@ -1,0 +1,206 @@
+/* General Body and Font Styling */
+body {
+    font-family: 'Inter', sans-serif; /* A clean, modern font */
+    background-color: #f0f2f5; /* A light grey background */
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+/* Main Container for the Dashboard */
+#main-container {
+    width: 100%;
+    max-width: 900px; /* Max width for larger screens */
+    background-color: #ffffff;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+/* Typography */
+h1 {
+    color: #1a2c4e; /* A deep, professional blue */
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    text-align: center;
+    color: #495057;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+/* Form Controls Styling (Select & Inputs) */
+label[for="table"], .input-group label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+select#table, .input-group input[type="month"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    background-color: #fff;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+select#table:focus, .input-group input[type="month"]:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Grouping for form elements */
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Dynamic Product Selector Container */
+#container {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    background-color: #f8f9fa;
+}
+
+#container .company-header {
+    background-color: #e9ecef;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+#container .company-header:first-child {
+    margin-top: 0;
+}
+
+#container .company-header:hover {
+    background-color: #dde1e5;
+}
+
+#container .product-list {
+    padding: 1rem 1rem 0.5rem 1.5rem;
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-top: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+#container .product-list label {
+    display: block;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+}
+
+#container .product-list input[type="checkbox"] {
+    margin-right: 0.75rem;
+    accent-color: #007bff;
+}
+
+/* Warning Text */
+#warning {
+    text-align: center;
+    font-weight: 600;
+    background-color: #fffbe6;
+    color: #8a6d3b;
+    padding: 1rem;
+    border: 1px solid #ffeeba;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+/* Main Action Button */
+button {
+    display: block;
+    width: 100%;
+    max-width: 250px;
+    margin: 1rem auto 1.5rem auto;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Status Text */
+#text {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    min-height: 20px;
+    margin-bottom: 1rem;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    margin-top: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    #main-container {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1rem;
+    }
+
+    button {
+        padding: 0.9rem;
+    }
+}
