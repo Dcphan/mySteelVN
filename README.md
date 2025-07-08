@@ -34,10 +34,11 @@ cd mySteelVN
 ```
 
 ### 2. Tạo Virtual Environment (môi trường ảo)
+
 ```bash
 python -m venv venv
-Kích hoạt môi trường ảo:```
-
+```
+Kích hoạt môi trường ảo:
 Windows:
 ```bash
 venv\Scripts\activate
