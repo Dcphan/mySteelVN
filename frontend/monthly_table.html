@@ -1,0 +1,68 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Array to Table</title>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+  
+</head>
+<body>
+        <h2>Select up to 4 Steel Products</h2>
+
+        <label for="table">Choose a table:</label>
+        <select id="table">
+            <option value="Production">Production</option>
+            <option value="Inventory">Inventory</option>
+            <option value="Domestic">Domestic</option>
+            <option value="Export">Export</option>
+        </select>
+        <br>
+
+        <div id="container"></div>
+
+        <p id="warning" style="color: red; display: none;">
+            You can select up to 4 products only.
+        </p>
+
+        
+
+        <!-- Product -->
+        <h3>Selected Products:</h3>
+        <ul id="selectedList"></ul>
+
+        <!-- Month -->
+
+        <div class="input-group">
+            <label for="start-month">Từ Tháng:</label> <input type="month" id="start-month"> </div>
+        
+        <div class="input-group">
+            <label for="end-month">Đến Tháng:</label> <input type="month" id="end-month"> </div>
+
+
+        <div style="margin-top: 10px;">
+            <button id="loadButton">Search</button>
+        </div>
+
+    <!-- Table -->
+    <table id="productTable" class="display">
+        <thead>
+            
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+        
+    <script src="/static/table.js?v=3"></script>
+    <script src="/static/filter.js"></script>
+    <script>
+    window.onload = selector;
+    </script>
+
+</body>
+</html>

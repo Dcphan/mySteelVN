@@ -1,0 +1,44 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Array to Table</title>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+  
+</head>
+<body>
+
+        <div class="product-select">
+            <input type="checkbox" name="hot steel coil" value="hot steel coil">
+            <label for="hot steel coil">hot steel coil</label>
+
+            <input type="checkbox" name="cool steel coil" value="cool steel coil">
+            <label for="cool steel coil">cool steel coil</label>
+        </div>
+
+        <div class="input-group">
+            <label for="month">Từ Tháng:</label> <input type="month" id="month"> 
+        </div>
+
+        <div style="margin-top: 10px;">
+            <button id="loadDataBtn">Search</button>
+        </div>
+
+    <table id="productTable" class="display">
+        <thead>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+
+    <script src="/static/table.js"></script>
+
+</body>
+    
+</html>

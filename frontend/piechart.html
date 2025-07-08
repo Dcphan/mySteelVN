@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Steel Dashboard</title>
+    <link rel="stylesheet" href="/static/piechart.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+</head>
+<body>
+    <div id="main-container">
+        <h1>Dashboard Thép</h1>
+        
+        <div class="product-select" id="product-select">
+            
+        </div>
+        
+
+        
+        
+        
+        <div class="input-group">
+            <label for="month">Chọn Tháng:</label> <input type="month" id="month"> </div>
+        
+       
+        <button onclick="loadMarketShare()">Render Chart</button>
+
+        <p id="text">Code run here</p>
+        
+        <div class="chart-container">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <script src="/static/chart.js"></script>
+    <script src="/static/filter.js"></script>
+
+    <script>
+        window.onload = pie_selector;
+    </script>
+</body>
+</html>

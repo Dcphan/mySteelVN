@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Steel Dashboard</title>
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.3/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+</head>
+<body>
+    <div id="main-container">
+        <h1>Dashboard Thép</h1>
+        
+        <h2>Select up to 4 Steel Products</h2>
+
+        <label for="table">Choose a table:</label>
+        <select id="table">
+            <option value="Production">Production</option>
+            <option value="Inventory">Inventory</option>
+            <option value="Domestic">Domestic</option>
+            <option value="Export">Export</option>
+        </select>
+        <br>
+
+        <div id="container"></div>
+
+        <p id="warning" style="color: red; display: none;">
+            You can select up to 4 products only.
+        </p>        
+        
+        <div class="input-group">
+            <label for="start-month">Từ Tháng:</label> <input type="month" id="start-month"> </div>
+        
+        <div class="input-group">
+            <label for="end-month">Đến Tháng:</label> <input type="month" id="end-month"> </div>
+        
+        <button onclick="loadAndRenderChart()">Render Chart</button>
+
+        <p id="text">Code run here</p>
+        
+        <div class="chart-container">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <script src="/static/chart.js?v=3"></script>
+    <script src="/static/filter.js"></script>
+    <script>
+    window.onload = selector;
+    </script>
+</body>
+</html>
