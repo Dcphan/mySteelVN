@@ -67,7 +67,7 @@ npm install
 ```
 ### 5. Chạy ứng dụng
 ```bash
-python backend\main.py`
+python backend\main.py
 ```
 
 ### 6. Xóa Môi Trường Ảo (khi không dùng nữa)
