@@ -20,7 +20,7 @@ other_country_name = {
     "espana": "Spain",
     "united arab emirate" : "United Arab Emirates",
     "uae" : "United Arab Emirates",
-    "british virgin": "British Virgin Islands",
+    "british virgin": "Virgin Islands, British",
     "russia": "Russia",
     "lao pdr": "Laos",
     "italia": "Italy"
