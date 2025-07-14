@@ -12,12 +12,13 @@ class imported_pipeline():
     
     def produce_check_xlsx(self):
         excel = self.import_file[['DATE', 'TAX CODE', 'IMPORTER', 'ADDRESS', 'EXPORTER', 'HS CODE', 'CURRENCY', 'AMOUNT', 'UNIT PRICE', 'UNIT']] # Name in Excel Have To Match
+        excel[['TAX CODE', 'HS CODE']] = excel[['TAX CODE', 'HS CODE']].astype(str)
 
         excel["EXCHANGE RATE"] = self.import_file["EXCHANGE RATE"].apply(lambda x: self.hs_and_currency_converter.ti_gia_conversion(x))
 
         excel['UNIT PRICE'] = excel.apply(lambda x: self.hs_and_currency_converter.unit_conversion(unit_price = x['UNIT PRICE'], forex_rate = x['EXCHANGE RATE'], unit = x['UNIT']), axis=1)
 
-        excel['COMBINED ADRESS'] = self.import_file.apply(
+        excel['COMBINED ADDRESS'] = self.import_file.apply(
             lambda row: self.country_detect.combine_address(
                 row['DIA CHI 1'],
                 row['DIA CHI 2'],
@@ -35,9 +36,19 @@ class imported_pipeline():
         )
 
         excel['QUANTITY'] = self.import_file.apply(lambda row: self.convert_unit.convert_to_tan(row["QUANTITY"], row["UNIT"]), axis=1)
+        
 
         importer_i_df = excel[['TAX CODE', 'IMPORTER', 'ADDRESS']]
+        importer_i_df = importer_i_df.rename(columns={'TAX CODE': 'mst', 'IMPORTER': 'company', 'ADDRESS': 'address'})
         
-        
+        importer_i_df = importer_i_df.drop_duplicates(subset = 'mst')
 
-        excel.to_excel("output.xlsx", index=False)
+        product_i_df = excel[['HS CODE', 'EXPORTED COUNTRY', 'COMBINED ADDRESS']]
+        product_i_df = product_i_df.rename(columns={'HS CODE': 'hs_code', 'EXPORTED COUNTRY': 'country', 'COMBINED ADDRESS': 'address'})
+        product_i_df = product_i_df.drop_duplicates()
+
+        transaction_df = excel[['TAX CODE','QUANTITY', 'UNIT PRICE', 'EXCHANGE RATE', 'AMOUNT', 'DATE', 'EXPORTER', 'HS CODE', 'EXPORTED COUNTRY', 'COMBINED ADDRESS']]
+        transaction_df = transaction_df.rename(columns={'TAX CODE': 'mst', 'QUANTITY': 'quantity', 'UNIT PRICE': 'unit_price', 'EXCHANGE RATE': 'exchange_rate', 'AMOUNT': 'amount', 'DATE': 'date', 'EXPORTER': 'exporter', 'HS CODE': 'hs_code', 'EXPORTED COUNTRY': 'country', 'COMBINED ADDRESS': 'address'})
+
+        return importer_i_df, product_i_df, transaction_df
+    
