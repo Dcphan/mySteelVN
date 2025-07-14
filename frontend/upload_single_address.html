@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Format 1</title>
+    <link rel="stylesheet" href="/static/xnk_upload.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Format 1: Single Address</h1>
+        <p>Upload an Excel file where each record has a single address column.</p>
+        <form action="/upload/format1" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".xlsx,.xls" required>
+            <input type="submit" value="Upload File">
+        </form>
+        <a href="/upload_selection" class="back-link">&larr; Back to format selection</a>
+    </div>
+</body>
+</html>

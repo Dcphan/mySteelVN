@@ -24,6 +24,7 @@ class SteelDatabaseManager:
             inventory_df.to_sql("inventory", self.engine, if_exists="append", index=False, method='multi')
             consumption_df.to_sql("consumption", self.engine, if_exists="append", index=False, method='multi')
             
+            # Do NOT call self.conn.commit(), it's not needed here
             print("Data saved to PostgreSQL.")
         except Exception as e:
             print(f"Error saving data to PostgreSQL: {e}")
