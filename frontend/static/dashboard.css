@@ -14,7 +14,7 @@ body {
 /* Main Container for the Dashboard */
 #main-container {
     width: 100%;
-    max-width: 900px; /* Max width for larger screens */
+    /* max-width: 1200px;  Max width for larger screens */
     background-color: #ffffff;
     padding: 2rem 2.5rem;
     border-radius: 12px;
@@ -81,11 +81,9 @@ select#table:focus, .input-group input[type="month"]:focus {
 
 /* Dynamic Product Selector Container */
 #container {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 1.5rem 0;
-    background-color: #f8f9fa;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 #container .company-header {
@@ -105,7 +103,7 @@ select#table:focus, .input-group input[type="month"]:focus {
     background-color: #dde1e5;
 }
 
-#container .product-list {
+#container .company-list {
     padding: 1rem 1rem 0.5rem 1.5rem;
     background-color: #fff;
     border: 1px solid #e9ecef;
@@ -114,13 +112,13 @@ select#table:focus, .input-group input[type="month"]:focus {
     border-bottom-right-radius: 5px;
 }
 
-#container .product-list label {
+#container .company-list label {
     display: block;
     margin-bottom: 0.75rem;
     cursor: pointer;
 }
 
-#container .product-list input[type="checkbox"] {
+#container .company-list input[type="checkbox"] {
     margin-right: 0.75rem;
     accent-color: #007bff;
 }

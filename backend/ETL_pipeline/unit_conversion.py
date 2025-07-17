@@ -40,3 +40,32 @@ unit_conversion = {
     "MM": 0.001,
     "INCH": 0.001
 }
+
+unit_name_to_code = {
+    "Tấn": "TNE",
+    "Cái/Chiếc": "PCE",
+    "Kilogam": "KGM",
+    "Gam": "GRM",
+    "Kiện/Hộp/Bao/Gói": "BAG",
+    "UNIT": "UNT",
+    "Tấm": "TAM",
+    "Mét vuông": "MTK",
+    "Mét": "MTR",
+    "Bộ": "SET",
+    "Lon/Can": "UNK",
+    "Lô (nhiều cái)": "LOT",
+    "Thùng": "HPCE",
+    "Túi": "PKG",
+    "Kilogam (tr.lg khô)": "KDW",
+    "Lít": "LTR",
+    "Cuộn": "ROL",
+    "Mili mét": "MM",
+    "Ống": "PIP",
+    "Sợi": "SOI",
+    "Kilo mét (1000 mét)": "KMTR",
+    "Gói": "KPR",
+    "Gam (trọng lg khô)": "GDW",
+    "LBS": "LBS",
+    "Thanh/Mảnh/Miếng": "TY",
+    "Phút": "FOT",
+}

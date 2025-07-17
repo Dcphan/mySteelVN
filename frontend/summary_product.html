@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expandable Summary Table</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-6xl mx-auto space-y-6">
+        <!-- Filters -->
+    <div class="w-48">
+    <label for="commoditySelect" class="block text-sm font-medium text-gray-700">Commodity</label>
+    <input
+        list="commodityOptions"
+        id="commoditySelect"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+    />
+    <datalist id="commodityOptions">
+        <!-- Options populated via TypeScript -->
+    </datalist>
+    </div>
+        <div class="w-48">
+            <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+            <input id="date" type="month" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+        </div>
+        <div class="flex-1 min-w-[250px]">
+            <label for="countrySelect" class="block text-sm font-medium text-gray-700">Commodities</label>
+            <select id="countrySelect" multiple class="mt-1 w-full"></select>
+            <div class="mt-1 space-x-2 text-sm">
+            <button onclick="selectAllItems()" class="text-blue-600 hover:underline">Select All</button>
+            <button onclick="deselectAllItems()" class="text-red-600 hover:underline">Deselect All</button>
+            </div>
+        </div>
+        <button onclick="fetchAndRenderTable()" class="h-10 bg-blue-600 text-white px-4 rounded hover:bg-blue-700">Render</button>
+        </div>
+
+    <!-- Table -->
+        <div class="bg-white shadow rounded-md overflow-x-auto">
+        <table class="min-w-full text-sm">
+            <thead class="bg-gray-800 text-white">
+            <tr>
+                <th class="text-left px-4 py-2">Commodity</th>
+                <th class="text-left px-4 py-2">Company</th>
+                <th class="text-right px-4 py-2">Total Quantity</th>
+            </tr>
+            </thead>
+            <tbody id="summary-table"></tbody>
+        </table>
+        </div>
+    </div>
+    <script src="/static/summary_product.js"></script>
+    <script src="/static/common_feature.js"></script>
+    </body>
+</html>

@@ -113,3 +113,4 @@ class Export:
         data['Export'] = self.change_to_pivot(df_export).to_dict(orient='records')
         data['Domestic'] = self.change_to_pivot(df_domestic).to_dict(orient='records')
         return data
+

@@ -1,4 +1,5 @@
 function selector_function(companyData) {
+  console.log(companyData)
   const container = document.getElementById("container");
   const warning = document.getElementById("warning");
   const selectedList = document.getElementById("selectedList");
@@ -18,21 +19,23 @@ function selector_function(companyData) {
 
   console.log("companyData:", companyData);
 
-  for (const [company, products] of Object.entries(companyData)) {
+  for (const [product, companies] of Object.entries(companyData)) {
     const companyDiv = document.createElement("div");
 
     const header = document.createElement("div");
-    header.textContent = "+ " + company;
+    header.textContent = "+ " + product;
     header.style.cursor = "pointer";
 
-    const productList = document.createElement("div");
-    productList.style.display = "none"
+    const companyList = document.createElement("div");
+    companyList.style.display = "none"
 
-    products.forEach(({ product, id }) => {
+    companies.forEach(({ company, id }) => {
       const label = document.createElement("label");
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.value = id;
+      
+      
 
       checkbox.addEventListener("change", () => {
         if (checkbox.checked) {
@@ -51,19 +54,19 @@ function selector_function(companyData) {
       });
 
       label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(" " + product));
-      productList.appendChild(label);
-      productList.appendChild(document.createElement("br"));
+      label.appendChild(document.createTextNode(" " + company));
+      companyList.appendChild(label);
+      companyList.appendChild(document.createElement("br"));
     });
 
     header.addEventListener("click", () => {
-      const isVisible = productList.style.display === "block";
-      productList.style.display = isVisible ? "none" : "block";
-      header.textContent = (isVisible ? "+ " : "- ") + company;
+      const isVisible = companyList.style.display === "block";
+      companyList.style.display = isVisible ? "none" : "block";
+      header.textContent = (isVisible ? "+ " : "- ") + product;
     });
 
     companyDiv.appendChild(header);
-    companyDiv.appendChild(productList);
+    companyDiv.appendChild(companyList);
     container.appendChild(companyDiv);
   }
 }

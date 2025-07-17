@@ -17,6 +17,7 @@ class XNK_pipeline:
 
     def load_file(self):
         self.import_file = pd.read_excel(self.file_path)
+        print(self.import_file.columns)
 
         # Detect which address format is used
         if all(col in self.import_file.columns for col in ['DIA CHI 1', 'DIA CHI 2', 'DIA CHI 3', 'DIA CHI 4']):
@@ -48,6 +49,7 @@ class XNK_pipeline:
         convert_unit = unit.UnitConverter(unit_conversion.unit_conversion)
 
         self.pipeline = import_pipeline.imported_pipeline(
+            self.file_path,
             self.import_file,
             self.address_cols,
             country_detect,
@@ -63,6 +65,7 @@ class XNK_pipeline:
 
     def import_function(self):
         self.load_file()
+        
         self.calculate_usd_rate()
         self.build_pipeline()
         importer_i_df, product_id_df, transaction_df = self.run_pipeline()

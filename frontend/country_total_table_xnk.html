@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HS Code Dashboard</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tom Select CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+<nav class="bg-indigo-600">
+<!-- Sidebar Navigation (Left Column)-->
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center space-x-4">
+        <a href="/dashboard" class="text-white font-medium hover:text-indigo-200">Dashboard</a>
+        <a href="/reports" class="text-white font-medium hover:text-indigo-200">Reports</a>
+        <a href="/settings" class="text-white font-medium hover:text-indigo-200">Settings</a>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="mb-4 max-w-xs">
+  <label for="month" class="block text-sm font-medium text-gray-700 mb-2">Select Month</label>
+  <select id="month" name="month"
+    class="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+    <option value="2025-01">January 2025</option>
+    <option value="2025-02">February 2025</option>
+    <option value="2025-03">March 2025</option>
+    <option value="2025-04">April 2025</option>
+    <option value="2025-05">May 2025</option>
+    <!-- Add future months here manually -->
+  </select>
+</div>
+
+
+  <div class="min-h-screen flex flex-col items-center px-4 py-6 space-y-6">
+
+    <!-- Filter Section -->
+    <!-- Filter Section -->
+    <div class="w-full max-w-4xl flex flex-col md:flex-row md:items-end gap-2">
+    <div class="flex-1">
+        <select id="itemSelect" multiple placeholder="Select commodities..." class="w-full"></select>
+        <div class="flex gap-2 mt-2">
+        <button onclick="selectAllItems()" class="text-xs text-blue-600 hover:underline">Select All</button>
+        <button onclick="deselectAllItems()" class="text-xs text-red-600 hover:underline">Deselect All</button>
+        </div>
+    </div>
+    <button onclick="fetchAndRenderTable()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Fetch Data
+    </button>
+    </div>
+
+
+    <!-- Table Section -->
+    <div class="w-full max-w-4xl bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-semibold mb-4">HS Code Summary</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm text-left">
+          <thead>
+            <tr class="bg-gray-800 text-white">
+              <th class="px-4 py-2">ROW LABELS</th>
+              <th class="px-4 py-2 text-right">SUM OF AMOUNT (USD)</th>
+              <th class="px-4 py-2 text-right">SUM OF REV.QTY</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white p-4 rounded shadow-md">
+        <h2 class="text-sm font-semibold text-gray-700 mb-2 text-center">Bar Chart: Amount (USD)</h2>
+        <div class="h-64">
+          <canvas id="barChart" class="w-full h-full"></canvas>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow-md">
+        <h2 class="text-sm font-semibold text-gray-700 mb-2 text-center">Pie Chart: Amount Share</h2>
+        <div class="h-64">
+          <canvas id="pieChart" class="w-full h-full"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/country_total_table_xnk.js"></script>
+  <script src="/static/total_table_xnk.js"></script>
+  
+</body>
+</html>

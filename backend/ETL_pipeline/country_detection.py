@@ -65,9 +65,7 @@ class DetectCountry():
         return None
     
     # Tổng hợp
-    def detect_country_full(self, address: list):
-        if len(address) > 1:
-            address = self.combine_address(address[0], address[1], address[2], address[3])
+    def detect_country_full(self, address: str):
         cleaned = self.clean_text(address)
 
         country = self.match_country_from_pycountry(cleaned)
