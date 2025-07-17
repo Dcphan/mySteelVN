@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 STATIC_DIR = os.path.join(BASE_DIR, "..", "frontend", "static")
 TEMPLATE_DIR = os.path.join(BASE_DIR, "..", "frontend")
-DB_PATH = os.path.join(BASE_DIR, "..", "database", "san_luong.db")
+print(TEMPLATE_DIR)
 
 class DataRequest(BaseModel):
     main_table: str
@@ -40,9 +40,9 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
-db_manager = SteelDatabaseManager(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst", host="192.168.10.13")
-table_db = TableDatabase(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst", host="192.168.10.13")
-export_handler = Export(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst", host="192.168.10.13")
+db_manager = SteelDatabaseManager(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
+table_db = TableDatabase(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
+export_handler = Export(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
 
 @app.get("/upload", response_class=HTMLResponse)
 async def upload_san_luong(request: Request):

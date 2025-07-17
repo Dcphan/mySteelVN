@@ -15,6 +15,8 @@ import uvicorn
 from starlette.background import BackgroundTask
 from export import Export
 import shutil
+import pandas as pd
+from sqlalchemy import text
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -71,6 +73,65 @@ async def upload_excel_file(file: UploadFile = File(...)):
     finally:
         if os.path.exists(temp_path):
             os.remove(temp_path)
+
+@app.get("/api/pivot-country-summary")
+def pivot_country_summary(date: str=Query(...), item: list=Query(...)):
+    data = db_manager.xnk_get_total_data("country", date, item)
+    return data
+
+@app.get("/api/pivot-hscode-summary")
+def pivot_product_summary(date: str=Query(...), item: list=Query(...)):
+    data = db_manager.xnk_get_total_data("commodity", date, item)
+    return data
+
+@app.get("/table/total-product-summary", response_class=HTMLResponse)
+async def read_table(request: Request):
+    return templates.TemplateResponse("total_table_xnk.html", {"request": request})
+
+@app.get("/api/commodity-options")
+def get_commodity_options():
+    return db_manager.get_distinct_commodities("commodity")
+
+@app.get("/api/country-options")
+def get_country_options():
+    return db_manager.get_distinct_commodities("country")
+
+@app.get("/table/total-country-summary", response_class=HTMLResponse)
+async def read_table(request: Request):
+    return templates.TemplateResponse("country_total_table_xnk.html", {"request": request})
+
+@app.get("/api/pivot-country")
+def pivot_summary(
+    commodities: List[str] = Query(default=["Alloy Bar", "Alloy Ingot"]),
+    country: str = Query(default="Japan"),
+    date: str = Query(default="2025-05")
+):
+    data = db_manager.xnk_get_info_by_country(country, commodities, date)
+    return data
+
+@app.get("/table/country-summary-table")
+def read_table(request: Request):
+    return templates.TemplateResponse("summary.html", {"request": request})
+
+@app.get("/api/pivot-commodity")
+def pivot_summary(
+    countries: List[str] = Query(default=["Japan", "China"]),
+    commodity: str = Query(default="Alloy Bar"),
+    date: str = Query(default="2025-05")
+):
+    data = db_manager.xnk_get_info_by_commodity(countries, commodity, date)
+    return data
+
+@app.get("/table/product-summary-table")
+def read_table(request: Request):
+    return templates.TemplateResponse("summary_product.html", {"request": request})
+
+
+
+
+
+    
+
 
 
 

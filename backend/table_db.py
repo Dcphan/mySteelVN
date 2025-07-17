@@ -102,8 +102,8 @@ class TableDatabase:
 
             result = {}
             for company, product, pid in rows:
-                entry = {"product": product, "id": pid}
-                result.setdefault(company, []).append(entry)
+                entry = {"company": company, "id": pid}
+                result.setdefault(product, []).append(entry)
             return result
         except Exception as e:
             print(f"Error in get_product_and_company: {e}")

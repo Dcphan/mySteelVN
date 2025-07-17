@@ -3,8 +3,9 @@ import pandas as pd
 from datetime import datetime
 from collections import defaultdict
 import psycopg2
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from decimal import Decimal
+from ETL_pipeline import hs_code
 
 class SteelDatabaseManager:
     def __init__(self, dbname, user, password, host='localhost', port=5432):
@@ -16,6 +17,8 @@ class SteelDatabaseManager:
             port=port
         )
         self.engine = create_engine(f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}')
+
+# File Sản Lượng
 
     def save_dataframes(self, product_df, production_df, inventory_df, consumption_df):
         try:
@@ -85,7 +88,7 @@ class SteelDatabaseManager:
             print("Data saved to PostgreSQL.")
             
         except Exception as e:
-            print(f"Error saving data to PostgreSQL")
+            print(f"Error saving data to PostgreSQL: {str(e)}")
 
 
     def close(self):
@@ -209,3 +212,143 @@ class SteelDatabaseManager:
             "labels": labels,
             "data": data
         }
+    
+
+
+# File Xuất Nhập Khẩu
+    def xnk_get_total_data(self, category, date, item:list):
+
+        placeholders = ', '.join(['%s'] * len(item))
+
+        query = f"""
+            SELECT * FROM (
+                SELECT 
+                    p.{category}, 
+                    ROUND(SUM(tr.amount)::numeric, 2) AS amount, 
+                    ROUND(SUM(tr.quantity)::numeric, 0) AS quantity
+                FROM transaction tr
+                JOIN product_i p ON tr.product_id = p.id
+                WHERE tr.date = %s AND p.{category} IN ({placeholders})
+                GROUP BY p.{category}
+
+                UNION ALL
+
+                SELECT 
+                    'TOTAL' AS {category}, 
+                    ROUND(SUM(tr.amount)::numeric, 2) AS amount, 
+                    ROUND(SUM(tr.quantity)::numeric, 0) AS quantity
+                FROM transaction tr
+                JOIN product_i p ON tr.product_id = p.id
+                WHERE tr.date = %s AND p.{category} IN ({placeholders})
+            ) AS combined
+            ORDER BY CASE WHEN {category} = 'TOTAL' THEN 0 ELSE 1 END;
+        """
+
+        # Construct parameter list: [date, *item, date, *item]
+        params = tuple([date] + item + [date] + item)
+
+        df = pd.read_sql(query, self.engine, params=params)
+        return df.to_dict(orient="records")
+    
+    def get_distinct_commodities(self, column):
+        try:
+            query = text(f"SELECT DISTINCT {column} FROM product_i;")
+            with self.engine.connect() as conn:
+                result = conn.execute(query)
+                return [row[0] for row in result.fetchall()]
+        except Exception as e:
+            print(f"Error fetching distinct commodities: {e}")
+            return []
+        
+    def xnk_get_info_by_country(self, country, commodities, date):
+        placeholders = ','.join(['%s'] * len(commodities))
+        params = [country] + commodities + [date] + [country] + commodities + [date]
+
+        query = f"""
+            SELECT *
+            FROM (
+                SELECT 
+                    p.commodity,
+                    i.company,
+                    SUM(t.quantity) AS total_quantity
+                FROM transaction t
+                JOIN product_i p ON p.id = t.product_id
+                JOIN importer_i i ON i.mst = t.mst
+                WHERE p.country = %s
+                AND p.commodity IN ({placeholders})
+                AND t.date = %s
+                GROUP BY p.commodity, i.company
+
+                UNION ALL
+
+                SELECT 
+                    p.commodity,
+                    'TOTAL' AS company,
+                    SUM(t.quantity) AS total_quantity
+                FROM transaction t
+                JOIN product_i p ON p.id = t.product_id
+                JOIN importer_i i ON i.mst = t.mst
+                WHERE p.country = %s
+                AND p.commodity IN ({placeholders})
+                AND t.date = %s
+                GROUP BY p.commodity
+            ) AS combined
+            ORDER BY 
+                commodity,
+                CASE WHEN company = 'TOTAL' THEN 1 ELSE 0 END,
+                company;
+        """
+        df = pd.read_sql(query, self.engine, params=tuple(params))
+        df = df.replace([float('inf'), float('-inf')], None)
+        df = df.fillna(0)  # or None, depending on what you want
+
+        data = df.to_dict(orient="records")
+        return data
+   
+    def xnk_get_info_by_commodity(self, countries, commodity, date):
+        placeholders = ','.join(['%s'] * len(countries))
+        params = [commodity] + countries + [date] + [commodity] + countries + [date]
+
+        query = f"""
+            SELECT *
+            FROM (
+                SELECT 
+                    p.country,
+                    i.company,
+                    SUM(t.quantity) AS total_quantity,
+                    SUM(t.amount) AS total_amount
+                FROM transaction t
+                JOIN product_i p ON p.id = t.product_id
+                JOIN importer_i i ON i.mst = t.mst
+                WHERE p.commodity = %s
+                AND p.country IN ({placeholders})
+                AND t.date = %s
+                GROUP BY p.country, i.company
+
+                UNION ALL
+
+                SELECT 
+                    p.country,
+                    'TOTAL' AS company,
+                    SUM(t.quantity) AS total_quantity,
+                    SUM(t.amount) AS total_amount
+                FROM transaction t
+                JOIN product_i p ON p.id = t.product_id
+                JOIN importer_i i ON i.mst = t.mst
+                WHERE p.commodity = %s
+                AND p.country IN ({placeholders})
+                AND t.date = %s
+                GROUP BY p.country
+            ) AS combined
+            ORDER BY 
+                country,
+                CASE WHEN company = 'TOTAL' THEN 1 ELSE 0 END,
+                company;
+        """
+        df = pd.read_sql(query, self.engine, params=tuple(params))
+        df = df.replace([float('inf'), float('-inf')], None)
+        df = df.fillna(0)
+
+        return df.to_dict(orient="records")
+
+            

@@ -171,7 +171,6 @@ function fetchMonthlyData() {
 }
 
 
-
 $(document).ready(function () {
   $('#loadButton').click(fetchMonthlyData);
 });

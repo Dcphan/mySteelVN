@@ -120,7 +120,7 @@ city_list = {
     "okayama": "Japan",
     "las pinas": "Philippines",
     "torrance": "United States",
-    "fareham hampshire": "UK",
+    "fareham hampshire": "United Kingdom",
     "maharashtra": "India",
     "mumbai": "India",
     "bangkok": "Thailand",

@@ -12,7 +12,7 @@ class SteelDataProcessor:
         self.skiprows = skiprows
         self.df = None
         self.date = self.extract_date_from_filename()
-        self.db_manager = SteelDatabaseManager(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst", host="192.168.10.13")
+        self.db_manager = SteelDatabaseManager(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
 
         # Output DataFrames
         self.product_df = pd.DataFrame(columns=['id', 'producttype', 'companyname'])
@@ -149,4 +149,3 @@ class SteelDataProcessor:
         self.process_all_rows()
         self.db_manager.save_dataframes(self.product_df, self.production_df, self.inventory_df, self.consumption_df)
         self.db_manager.close()
-
