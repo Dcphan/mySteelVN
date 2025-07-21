@@ -6,6 +6,30 @@ import psycopg2
 from sqlalchemy import create_engine, text
 from decimal import Decimal
 from ETL_pipeline import hs_code
+import numpy as np
+
+COLUMN_TABLE_MAP = {
+    "exporter": "transaction",
+    "date": "transaction",
+    "mst": "transaction",
+    "commodity": "product_i",
+    "hs_code": "product_i",
+    "country": "product_i",
+    "company": "importer_i",
+    "address": "importer_i"
+}
+
+TABLE_JOIN_SQL = {
+    "transaction": "",
+    "product_i": """
+        JOIN transaction t ON p.id = t.product_id
+    """,
+    "importer_i": """
+        JOIN transaction t ON i.mst = t.mst
+    """
+}
+
+TABLE_ALIAS_MAP = {"transaction": "t", "product_i": "p", "importer_i": "i"}
 
 class SteelDatabaseManager:
     def __init__(self, dbname, user, password, host='localhost', port=5432):
@@ -260,95 +284,135 @@ class SteelDatabaseManager:
             print(f"Error fetching distinct commodities: {e}")
             return []
         
-    def xnk_get_info_by_country(self, country, commodities, date):
-        placeholders = ','.join(['%s'] * len(commodities))
-        params = [country] + commodities + [date] + [country] + commodities + [date]
+    def xnk_get_info(self, filter_field, filter_value, rows_fields: list, rows_values, date):
+        # Resolve which tables each column comes from
+        fixed_table = COLUMN_TABLE_MAP[filter_field]
+        variable_table_1 = COLUMN_TABLE_MAP[rows_fields[0]]
+        variable_table_2 = COLUMN_TABLE_MAP[rows_fields[1]]
 
+
+
+
+        # Resolve aliases for both fields
+        fixed_alias = TABLE_ALIAS_MAP[fixed_table]
+        variable_alias_1 = TABLE_ALIAS_MAP[variable_table_1]
+        variable_alias_2 = TABLE_ALIAS_MAP[variable_table_2]
+
+
+        # Prepare parameter placeholders
+        placeholders = ','.join(['%s'] * len(rows_values))
+        params = [filter_value] + rows_values + [date] + [filter_value] + rows_values + [date]
+
+        # SQL SELECT fields
+        select_fields = f"{variable_alias_1}.{rows_fields[0]}, {variable_alias_2}.{rows_fields[1]}, SUM(t.quantity) AS total_quantity"
+        total_select_fields = f"{variable_alias_1}.{rows_fields[0]}, 'TOTAL' AS {rows_fields[1]}, SUM(t.quantity) AS total_quantity"
+
+        # Final SQL query
         query = f"""
             SELECT *
             FROM (
                 SELECT 
-                    p.commodity,
-                    i.company,
-                    SUM(t.quantity) AS total_quantity
+                    {select_fields}
                 FROM transaction t
                 JOIN product_i p ON p.id = t.product_id
                 JOIN importer_i i ON i.mst = t.mst
-                WHERE p.country = %s
-                AND p.commodity IN ({placeholders})
+                WHERE {fixed_alias}.{filter_field} = %s
+                AND {variable_alias_1}.{rows_fields[0]} IN ({placeholders})
                 AND t.date = %s
-                GROUP BY p.commodity, i.company
+                GROUP BY {variable_alias_1}.{rows_fields[0]}, {variable_alias_2}.{rows_fields[1]}
 
                 UNION ALL
 
                 SELECT 
-                    p.commodity,
-                    'TOTAL' AS company,
-                    SUM(t.quantity) AS total_quantity
+                    {total_select_fields}
                 FROM transaction t
                 JOIN product_i p ON p.id = t.product_id
                 JOIN importer_i i ON i.mst = t.mst
-                WHERE p.country = %s
-                AND p.commodity IN ({placeholders})
+                WHERE {fixed_alias}.{filter_field} = %s
+                AND {variable_alias_1}.{rows_fields[0]} IN ({placeholders})
                 AND t.date = %s
-                GROUP BY p.commodity
+                GROUP BY {variable_alias_1}.{rows_fields[0]}
             ) AS combined
             ORDER BY 
-                commodity,
-                CASE WHEN company = 'TOTAL' THEN 1 ELSE 0 END,
-                company;
+                {rows_fields[0]},
+                CASE WHEN {rows_fields[1]} = 'TOTAL' THEN 1 ELSE 0 END,
+                {rows_fields[1]};
         """
+
+        print(query)
+        print(params)
+
         df = pd.read_sql(query, self.engine, params=tuple(params))
-        df = df.replace([float('inf'), float('-inf')], None)
-        df = df.fillna(0)  # or None, depending on what you want
 
-        data = df.to_dict(orient="records")
-        return data
-   
-    def xnk_get_info_by_commodity(self, countries, commodity, date):
-        placeholders = ','.join(['%s'] * len(countries))
-        params = [commodity] + countries + [date] + [commodity] + countries + [date]
-
-        query = f"""
-            SELECT *
-            FROM (
-                SELECT 
-                    p.country,
-                    i.company,
-                    SUM(t.quantity) AS total_quantity,
-                    SUM(t.amount) AS total_amount
-                FROM transaction t
-                JOIN product_i p ON p.id = t.product_id
-                JOIN importer_i i ON i.mst = t.mst
-                WHERE p.commodity = %s
-                AND p.country IN ({placeholders})
-                AND t.date = %s
-                GROUP BY p.country, i.company
-
-                UNION ALL
-
-                SELECT 
-                    p.country,
-                    'TOTAL' AS company,
-                    SUM(t.quantity) AS total_quantity,
-                    SUM(t.amount) AS total_amount
-                FROM transaction t
-                JOIN product_i p ON p.id = t.product_id
-                JOIN importer_i i ON i.mst = t.mst
-                WHERE p.commodity = %s
-                AND p.country IN ({placeholders})
-                AND t.date = %s
-                GROUP BY p.country
-            ) AS combined
-            ORDER BY 
-                country,
-                CASE WHEN company = 'TOTAL' THEN 1 ELSE 0 END,
-                company;
-        """
-        df = pd.read_sql(query, self.engine, params=tuple(params))
-        df = df.replace([float('inf'), float('-inf')], None)
-        df = df.fillna(0)
+        # Clean NaN/inf to avoid JSON errors
+        df.replace([np.inf, -np.inf], np.nan, inplace=True)
+        df.dropna(how='any', inplace=True)
 
         return df.to_dict(orient="records")
 
-            
+   
+   # delete later:
+    
+    def xnk_get_distinct_filter(self, filter, date):
+        table = COLUMN_TABLE_MAP.get(filter)
+        if table is None:
+            raise ValueError(f"Invalid filter: {filter}")
+
+        alias = TABLE_ALIAS_MAP[table]
+        join_clause = TABLE_JOIN_SQL.get(table, "")
+
+        try:
+            # Base SQL
+            sql = f"""
+                SELECT DISTINCT {alias}.{filter}
+                FROM {table} {alias}
+                {join_clause}
+            """
+
+            params = {}
+
+            # Add date filter only if date is not None
+            if date:
+                sql += " WHERE t.date = :date"
+                params["date"] = date
+
+            sql += f" ORDER BY {alias}.{filter};"
+
+            query = text(sql)
+
+            with self.engine.connect() as conn:
+                result = conn.execute(query, params)
+                return [row[0] for row in result.fetchall()]
+        except Exception as e:
+            print(f"Error fetching distinct {filter}: {e}")
+            return []
+
+    
+
+    def get_XNK_data(self, date: list):
+        placeholders = ', '.join(['%s'] * len(date))
+        
+        query = f"""
+        SELECT 
+            t.mst, 
+            t.quantity, 
+            t.unit_price, 
+            t.exchange_rate, 
+            t.amount, 
+            t.date,  
+            t.exporter, 
+            i.company AS importer,
+            i.address,
+            p.commodity,
+            p.hs_code,
+            p.country
+        FROM transaction t
+        JOIN product_i p ON p.id = t.product_id
+        JOIN importer_i i ON i.mst = t.mst
+        where t.date in ({placeholders});
+        """
+
+        param = tuple(date)
+
+        df = pd.read_sql(query, self.engine, params=param)
+        return df
