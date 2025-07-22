@@ -1,8 +1,10 @@
 
     let tomSelectInstance = null;
 
-    async function loadFilterOptions() {
-    const res = await fetch('http://127.0.0.1:8000/api/country-options'); // Make this to be a variable that will change 
+    export async function loadFilterOptions(filter) {
+    const url = new URL('http://127.0.0.1:8000/api/filtering-data'); 
+    url.searchParams.set("filter", filter);
+    const res = await fetch(url);
     const options = await res.json();
 
     const datalist = document.getElementById("filterOptions");
@@ -16,9 +18,12 @@
     }
 
     
-    async function loadRowOptions() {
-      const res = await fetch('http://127.0.0.1:8000/api/commodity-options'); // Make this to be a variable that will change 
+    export async function loadRowOptions(filter) {
+      const url = new URL('http://127.0.0.1:8000/api/filtering-data'); 
+      url.searchParams.set("filter", filter);
+      const res = await fetch(url);
       const options = await res.json();
+
       const select = document.getElementById("rowSelect");
       select.innerHTML = '';
 
@@ -54,46 +59,53 @@
       icon.textContent = isHidden ? '-' : '+';
     }
 
-    async function fetchAndRenderTable() {
+    export async function fetchAndRenderTable(filter_fields, rows_fields, values_fields) { // With Two Rows
+
+      // Collect Data
       const filter = document.getElementById("filterSelect").value;
       const date = document.getElementById("date").value;
       const rows = tomSelectInstance ? tomSelectInstance.getValue() : [];
+      console.log("Filter Fields: ", filter_fields);
 
-      if (!filter || !date || rows.length === 0) {
+      if (!date) {
         alert("Please fill in all filters.");
         return;
       }
 
-      const url = new URL("http://127.0.0.1:8000/api/pivot-country");
-      url.searchParams.set("country", filter); // Change "..." base on the URL
-      url.searchParams.set("date", date);
-      rows.forEach(r => url.searchParams.append("commodities", r)); // Change "..." base on the URL
-      
 
+      // FETCHING DATA using URL
+      const url = new URL("http://127.0.0.1:8000/api/pivot-data");
+      url.searchParams.set("filter_field", filter_fields);
+      rows_fields.forEach(r =>url.searchParams.append("rows_field", r));
+      values_fields.forEach(r =>url.searchParams.append("value_field", r));
+      url.searchParams.set("filter_value", filter); // Change "..." base on the URL
+      url.searchParams.set("date", date);
+      rows.forEach(r => url.searchParams.append("rows_value", r)); // Change "..." base on the URL     
+
+
+      console.log("Value: ",values_fields);
       const res = await fetch(url);
       const data = await res.json();
-      
-
+      console.log("Data: ", data);
+     
+      // FIXING THE TABLE BODY
       const tableBody = document.getElementById("summary-table");
       tableBody.innerHTML = '';
 
       const grouped = {};
       
+      // GROUP EVERY FIRST ROW TOGETHER (Easier to deal with data later)
       data.forEach(row => {
-        if (!grouped[row.commodity]) grouped[row.commodity] = []; // Commodity is equivalent to the first field in Rows
-        grouped[row.commodity].push(row);
+        if (!grouped[row[rows_fields[0]]]) grouped[row[rows_fields[0]]] = []; // Commodity is equivalent to the first field in Rows
+        grouped[row[rows_fields[0]]].push(row);
       });
 
       
-      
       for (const [rowName, rowsValue] of Object.entries(grouped)) {
-        console.log(rowsValue);
-        
-        const total = rowsValue.find(r => r.company === 'TOTAL');
-        
-        
-        const others = rowsValue.filter(r => r.company !== 'TOTAL');
+        const total = rowsValue.find(r => r[rows_fields[1]] === 'TOTAL');
+        const others = rowsValue.filter(r => r[rows_fields[1]] !== 'TOTAL');
         const rowsKey = makeSafeKey(rowName);
+        console.log(others);
 
         // Total row with toggle
         const tr = document.createElement("tr");
@@ -104,18 +116,30 @@
             ${rowName}
           </td>
           <td class="px-4 py-2 text-gray-500">TOTAL</td>
-          <td class="px-4 py-2 text-right text-blue-600 font-bold">${Number(total.total_quantity).toLocaleString()}</td>
         `;
+        for (const element of values_fields){
+            const td = document.createElement("td");
+            td.className = "px-4 py-2 text-right";
+            console.log(element)
+            td.textContent = Number(total[element]).toLocaleString();
+            tr.appendChild(td);
+          }
         tableBody.appendChild(tr);
 
         others.forEach(companyRow => {
           const row = document.createElement("tr");
           row.className = `child-${rowsKey} hidden`; // keyword HIDDEN are responsible for the hidden
           row.innerHTML = `
-            <td class="px-4 py-2">&nbsp;</td>
-            <td class="px-4 py-2">${companyRow.company}</td>
-            <td class="px-4 py-2 text-right">${Number(companyRow.total_quantity).toLocaleString()}</td>
+            <td class="px-4 py-2">&nbsp</td>
+            <td class="px-4 py-2">${companyRow[rows_fields[1]]}</td>
           `;
+          for (const element of values_fields){
+            const td = document.createElement("td");
+            td.className = "px-4 py-2 text-right";
+            console.log(element)
+            td.textContent = Number(companyRow[element]).toLocaleString();
+            row.appendChild(td);
+          }
           tableBody.appendChild(row);
         });
       }
@@ -123,9 +147,7 @@
     function makeSafeKey(input) {
   return input.toLowerCase().replace(/[^a-z0-9]/gi, '-'); // Only letters and digits
 }
+window.toggleCompanies = toggleCompanies;
 
-// drag_and_drop.js
 
-loadRowOptions();
-loadFilterOptions();
   
