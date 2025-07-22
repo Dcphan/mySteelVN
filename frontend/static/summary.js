@@ -59,35 +59,99 @@
       icon.textContent = isHidden ? '-' : '+';
     }
 
-    export async function fetchAndRenderTable(filter_fields, rows_fields, values_fields) { // With Two Rows
-
+    export async function fetchAndRenderTable(filter_fields, rows_fields, values_fields) {
       // Collect Data
-      const filter = document.getElementById("filterSelect").value;
+      let filterSelect = document.getElementById("filterSelect");
+      let filter = null;
+      if (filterSelect !== null) {
+        filter = filterSelect.value;
+      }
+
       const date = document.getElementById("date").value;
       const rows = tomSelectInstance ? tomSelectInstance.getValue() : [];
-      console.log("Filter Fields: ", filter_fields);
 
       if (!date) {
-        alert("Please fill in all filters.");
+        alert("Please fill in the date filter.");
         return;
+      }
+      
+      if (rows_fields.length > 1) {
+        
+      const url = new URL("http://127.0.0.1:8000/api/pivot-data");
+
+      // Only set filter_field if provided
+      if (filter_fields !== null && filter_fields !== undefined) {
+        url.searchParams.set("filter_field", filter_fields);
+      }
+
+      // Only set filter_value if filter element is present
+      if (filter !== null && filter !== undefined && filter !== "") {
+        url.searchParams.set("filter_value", filter);
+      }
+
+      rows_fields.forEach(r => url.searchParams.append("rows_field", r));
+      values_fields.forEach(r => url.searchParams.append("value_field", r));
+      url.searchParams.set("date", date);
+      rows.forEach(r => url.searchParams.append("rows_value", r));
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      // CALL FUNCTION
+      fetchTableWithTwoRows(filter_fields, rows_fields, values_fields, data);
+
+      } else if ( rows_fields.length == 1) {
+        const url = new URL("http://127.0.0.1:8000/api/single-pivot-summary");
+        url.searchParams.set("row_field", rows_fields[0]);
+        url.searchParams.set("date", date);
+        rows.forEach(r => url.searchParams.append("item", r));
+        values_fields.forEach(v => url.searchParams.append("value_fields", v));
+        const res = await fetch(url);
+        const data = await res.json();
+        fetchTableWithOneRow(filter_fields, rows_fields, values_fields, data);
+        
+
+        
       }
 
 
-      // FETCHING DATA using URL
-      const url = new URL("http://127.0.0.1:8000/api/pivot-data");
-      url.searchParams.set("filter_field", filter_fields);
-      rows_fields.forEach(r =>url.searchParams.append("rows_field", r));
-      values_fields.forEach(r =>url.searchParams.append("value_field", r));
-      url.searchParams.set("filter_value", filter); // Change "..." base on the URL
-      url.searchParams.set("date", date);
-      rows.forEach(r => url.searchParams.append("rows_value", r)); // Change "..." base on the URL     
+      
+    }
+
+    async function fetchTableWithOneRow(filter_fields, rows_fields, values_fields, data){
+      const tableBody = document.getElementById("summary-table");
+      tableBody.innerHTML = '';
+
+      const grouped = {};
+      data.forEach(row => {
+        const isTotal = row[rows_fields[0]] === 'TOTAL';
+        const tr = document.createElement("tr");
+        tr.className = isTotal
+      ? "bg-gray-500 text-white font-bold"
+      : "hover:bg-gray-50";
+         tr.innerHTML = `
+        <td class="px-4 py-2">${row[rows_fields[0]]}</td>
+        `
+
+        for (const element of values_fields){
+          const td = document.createElement("td")
+          td.className = "px-4 py-2 text-right"
+          td.textContent = Number(row[element]).toLocaleString();
+          tr.appendChild(td);
+        }
+        tableBody.appendChild(tr);
+        
 
 
-      console.log("Value: ",values_fields);
-      const res = await fetch(url);
-      const data = await res.json();
-      console.log("Data: ", data);
-     
+      });
+
+      
+        
+
+      
+    }
+
+    async function fetchTableWithTwoRows(filter_fields, rows_fields, values_fields, data){      
       // FIXING THE TABLE BODY
       const tableBody = document.getElementById("summary-table");
       tableBody.innerHTML = '';
@@ -120,16 +184,15 @@
         for (const element of values_fields){
             const td = document.createElement("td");
             td.className = "px-4 py-2 text-right";
-            console.log(element)
             td.textContent = Number(total[element]).toLocaleString();
             tr.appendChild(td);
           }
         tableBody.appendChild(tr);
 
         others.forEach(companyRow => {
-          const row = document.createElement("tr");
-          row.className = `child-${rowsKey} hidden`; // keyword HIDDEN are responsible for the hidden
-          row.innerHTML = `
+          const tr = document.createElement("tr");
+          tr.className = `child-${rowsKey} hidden hover:bg-gray-100`; // keyword HIDDEN are responsible for the hidden
+          tr.innerHTML = `
             <td class="px-4 py-2">&nbsp</td>
             <td class="px-4 py-2">${companyRow[rows_fields[1]]}</td>
           `;
@@ -138,9 +201,9 @@
             td.className = "px-4 py-2 text-right";
             console.log(element)
             td.textContent = Number(companyRow[element]).toLocaleString();
-            row.appendChild(td);
+            tr.appendChild(td);
           }
-          tableBody.appendChild(row);
+          tableBody.appendChild(tr);
         });
       }
     }
