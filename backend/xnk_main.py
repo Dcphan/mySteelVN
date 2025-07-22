@@ -9,6 +9,7 @@ from table_db import TableDatabase
 from db import SteelDatabaseManager
 from Import import SteelDataProcessor
 from xnk_pipeline import XNK_pipeline
+from pivottable import pivotTable
 from pydantic import BaseModel
 from pathlib import Path
 import uvicorn
@@ -16,7 +17,9 @@ from starlette.background import BackgroundTask
 from export import Export
 import shutil
 import pandas as pd
+import time
 from sqlalchemy import text
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -35,6 +38,9 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
+
+
+pvTable = pivotTable()
 
 db_manager = SteelDatabaseManager(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
 table_db = TableDatabase(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
@@ -88,13 +94,6 @@ def pivot_product_summary(date: str=Query(...), item: list=Query(...)):
 async def read_table(request: Request):
     return templates.TemplateResponse("total_table_xnk.html", {"request": request})
 
-@app.get("/api/commodity-options")
-def get_commodity_options():
-    return db_manager.get_distinct_commodities("commodity")
-
-@app.get("/api/country-options")
-def get_country_options():
-    return db_manager.get_distinct_commodities("country")
 
 @app.get("/table/total-country-summary", response_class=HTMLResponse)
 async def read_table(request: Request):
@@ -106,34 +105,52 @@ def pivot_summary(
     country: str = Query(default="Japan"),
     date: str = Query(default="2025-05")
 ):
-    data = db_manager.xnk_get_info_by_country(country, commodities, date)
+    data = db_manager.xnk_get_info(
+        filter_field="country",
+        filter_value=country,
+        rows_fields=["commodity", "mst"],
+        rows_values=commodities,
+        values_fields=["quantity"],
+        date=date,
+        )
     return data
 
 @app.get("/table/country-summary-table")
 def read_table(request: Request):
     return templates.TemplateResponse("summary.html", {"request": request})
 
-@app.get("/api/pivot-commodity")
+@app.get("/api/pivot-data")
 def pivot_summary(
-    countries: List[str] = Query(default=["Japan", "China"]),
-    commodity: str = Query(default="Alloy Bar"),
+    filter_field: str = Query(default="commodity"),
+    rows_field: List[str] = Query(default=["country", 'company']),
+    
+    rows_value: List[str] = Query(default=["Japan", "China"]),
+    filter_value: str = Query(default="Alloy Bar"),
+    value_fields: List[str] = Query(default=["quantity", "amount"]),
     date: str = Query(default="2025-05")
 ):
-    data = db_manager.xnk_get_info_by_commodity(countries, commodity, date)
-    return data
+    data = db_manager.xnk_get_info(
+        filter_field=filter_field,
+        filter_value=filter_value,
+        rows_fields=rows_field,
+        rows_values=rows_value,
+        values_fields=value_fields,
+        date=date
+    )
+    return JSONResponse(content=data)
 
 @app.get("/table/product-summary-table")
 def read_table(request: Request):
     return templates.TemplateResponse("summary_product.html", {"request": request})
 
 
-
-
-
-    
-
-
-
+@app.get("/api/filtering-data")
+def filtering_data(
+    filter: str = Query(default=None),
+    date: str = Query(default=None),
+):
+    data = db_manager.xnk_get_distinct_filter(filter, date)
+    return data
 
 if __name__ == "__main__":
     uvicorn.run("xnk_main:app", host="127.0.0.1", port=8000, reload=True)
