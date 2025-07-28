@@ -1,8 +1,8 @@
 import pandas as pd
 import re
 from pathlib import Path
-from ETL_pipeline import parser, regex_pattern, country_detection, country_dictionary, hs_and_currency, hs_code, unit, unit_conversion
-from ETL_pipeline.unit_conversion import unit_conversion as unit_conversion_dict, unit_name_to_code
+from backend.ETL_pipeline import parser, regex_pattern, country_detection, country_dictionary, hs_and_currency, hs_code, unit, unit_conversion
+from backend.ETL_pipeline.unit_conversion import unit_conversion as unit_conversion_dict, unit_name_to_code
 
 
 class imported_pipeline():
