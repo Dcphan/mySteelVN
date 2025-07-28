@@ -5,15 +5,15 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Any, Optional
-from table_db import TableDatabase
-from db import SteelDatabaseManager
-from Import import SteelDataProcessor
+from backend.table_db import TableDatabase
+from backend.db import SteelDatabaseManager
+from backend.Import import SteelDataProcessor
 from pydantic import BaseModel
 from pathlib import Path
 import uvicorn
-from xnk_pipeline import XNK_pipeline
+from backend.xnk_pipeline import XNK_pipeline
 from starlette.background import BackgroundTask
-from export import Export
+from backend.export import Export
 import shutil
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
