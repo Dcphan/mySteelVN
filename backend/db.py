@@ -32,7 +32,7 @@ TABLE_JOIN_SQL = {
 TABLE_ALIAS_MAP = {"transaction": "t", "product_i": "p", "importer_i": "i"}
 
 class SteelDatabaseManager:
-    def __init__(self, dbname, user, password, host=192.168.10.96, port=5432):
+    def __init__(self, dbname, user, password, host="192.168.10.96", port=5432):
         self.conn = psycopg2.connect(
             dbname=dbname,
             user=user,
