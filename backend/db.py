@@ -5,7 +5,7 @@ from collections import defaultdict
 import psycopg2
 from sqlalchemy import create_engine, text
 from decimal import Decimal
-from ETL_pipeline import hs_code
+from backend.ETL_pipeline import hs_code
 import numpy as np
 
 COLUMN_TABLE_MAP = {
