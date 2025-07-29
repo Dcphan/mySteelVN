@@ -1,44 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-gray-100">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Steel Dashboard</title>
-    <link rel="stylesheet" href="/static/piechart.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Steel Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
-<body>
-    <div id="main-container">
-        <h1>Dashboard Thép</h1>
-        
-        <div class="product-select" id="product-select">
-            
-        </div>
-        
+<body class="m-0 font-sans text-gray-800">
 
-        
-        
-        
-        <div class="input-group">
-            <label for="month">Chọn Tháng:</label> <input type="month" id="month"> </div>
-        
-       
-        <button onclick="loadMarketShare()">Render Chart</button>
+  <!-- NAVBAR -->
+  {% include "components/navbar.html" %}
 
-        <p id="text">Code run here</p>
-        
-        <div class="chart-container">
-            <canvas id="myChart"></canvas>
-        </div>
+  <div id="main-container" class="max-w-5xl mx-auto bg-white p-6 mt-6 rounded-xl shadow-md">
+    <h1 class="text-2xl font-bold mb-6 text-center">🥧 Pie Chart</h1>
+    
+    <!-- Product dropdown will be inserted here -->
+    <div id="product-select" class="mb-6">
+      <!-- JS dynamically inserts options -->
+    </div>
+    
+    <!-- Input Group -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div>
+        <label for="month" class="block font-medium mb-1">Chọn Tháng:</label>
+        <input type="month" id="month" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-500">
+      </div>
+      <div>
+        <label for="top_n" class="block font-medium mb-1">Chọn số lượng công ty so sánh:</label>
+        <input type="text" id="top_n" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-500">
+      </div>
     </div>
 
-    <script src="/static/chart.js"></script>
-    <script src="/static/filter.js"></script>
+    <!-- Render Button -->
+    <div class="text-center mb-4">
+      <button onclick="loadMarketShare()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow">
+        Render Chart
+      </button>
+    </div>
 
-    <script>
-        window.onload = pie_selector;
-    </script>
+    <!-- Result Message -->
+    <p id="text" class="text-sm text-gray-600 italic text-center mb-4">Code run here</p>
+
+    <!-- Chart Container -->
+    <div class="bg-gray-50 p-4 rounded-lg shadow">
+      <canvas id="myChart"></canvas>
+    </div>
+  </div>
+
+  <script src="/static/chart.js"></script>
+  <script src="/static/filter.js"></script>
+  <script>
+    window.onload = pie_selector;
+  </script>
 </body>
 </html>

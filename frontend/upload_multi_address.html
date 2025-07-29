@@ -1,20 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Format 2</title>
-    <link rel="stylesheet" href="/static/xnk_upload.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Format 2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>Upload Format 2: Multiple Addresses</h1>
-        <p>Upload an Excel file where address parts (e.g., DIA CHI 1, DIA CHI 2, DIA CHI 3, DIA CHI 4) are in separate columns.</p>
-        <form action="/upload_excel_xnk" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".xlsx,.xls" required>
-            <input type="submit" value="Upload File">
+<body class="bg-gray-100 text-gray-800 min-h-screen font-sans antialiased">
+
+  <!-- Top Navbar -->
+  {% include "components/navbar.html" %}
+
+  <!-- Main Content -->
+  <main class="max-w-5xl mx-auto pt-6 md:pt-10 px-6 md:px-10">
+
+    <!-- Page Header -->
+    <div>
+      <h1 class="text-3xl md:text-4xl font-bold mb-2">📤 Import Upload</h1>
+      <p class="text-gray-600 mb-6">Upload an Excel file with multiple address columns (e.g., DIA CHI 1, 2, 3, 4).</p>
+
+      <!-- Upload Section -->
+      <section class="bg-white rounded-xl shadow p-6 mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Upload Excel File</h2>
+        <p class="text-gray-600 mb-4">
+          Make sure each address part is in its own column.
+        </p>
+
+        <form action="/importer/upload_excel_xnk" method="post" enctype="multipart/form-data" class="space-y-4">
+          <input type="file" name="file" accept=".xlsx,.xls" required
+                 class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"/>
+          <input type="submit" value="Upload File"
+                 class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition"/>
         </form>
-        <a href="/upload_selection" class="back-link">&larr; Back to format selection</a>
+
+        
+      </section>
+
     </div>
+  </main>
 </body>
 </html>

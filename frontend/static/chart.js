@@ -82,64 +82,93 @@ async function loadMarketShare() {
         return;
     }
 
-    const checkboxes = document.querySelectorAll('.product-select input[type="checkbox"]:checked');
+    const checkboxes = document.querySelectorAll('#product-select input[type="checkbox"]:checked');
     if (checkboxes.length === 0) {
         alert("Vui lòng chọn ít nhất một sản phẩm!");
         return;
     }
 
-    const productType = checkboxes[0].value;
+    const top_n = document.getElementById("top_n").value;
+    const top_n_number = parseInt(top_n);
 
-    const response = await fetch(`/api/pie-market-share?product_type=${encodeURIComponent(productType)}&date=${month}`);
-    if (!response.ok) {
-        document.getElementById("text").textContent = "Lỗi khi gọi API";
+    if (isNaN(top_n_number) || top_n_number <= 0) {
+        alert("Số lượng công ty phải là số hợp lệ lớn hơn 0.");
         return;
     }
 
-    const pieData = await response.json();
-    const ctx = document.getElementById("myChart");
+    // Use only the first product (if single selection) — or loop through later if needed
+    const productType = checkboxes[0].value;
 
-    if (marketChartInstance) {
-        marketChartInstance.destroy();
-    }
+    try {
+        const response = await fetch(`/api/pie-market-share?top_n=${top_n_number}&product_type=${encodeURIComponent(productType)}&date=${month}`);
+        if (!response.ok) throw new Error("Lỗi khi gọi API");
 
-    marketChartInstance = new Chart(ctx, {
-        type: "pie",
-        data: {
-            labels: pieData.labels,
-            datasets: [{
-                data: pieData.data,
-                backgroundColor: [
-                    "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0",
-                    "#9966FF", "#FF9F40", "#C9CBCF", "#66CC99"
-                ],
-                hoverOffset: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: `Market Share: ${productType} - ${month}`
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            const value = context.raw || 0;
-                            const total = context.dataset.data.reduce((acc, cur) => acc + cur, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return `${value} (${percentage}%)`;
+        const pieData = await response.json();
+
+        if (!pieData || !pieData.labels || !pieData.data) {
+            throw new Error("Dữ liệu trả về không hợp lệ.");
+        }
+
+        const ctx = document.getElementById("myChart");
+
+        if (marketChartInstance) {
+            marketChartInstance.destroy();
+        }
+
+        marketChartInstance = new Chart(ctx, {
+            type: "pie",
+            data: {
+                labels: pieData.labels,
+                datasets: [{
+                    data: pieData.data,
+                    backgroundColor: [
+                        "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0",
+                        "#9966FF", "#FF9F40", "#C9CBCF", "#66CC99",
+                        "#C0392B", "#2980B9", "#27AE60", "#8E44AD"
+                    ],
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Thị phần: ${productType} - ${month}`,
+                        font: { size: 18 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const value = context.raw ?? 0;
+                                const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                                const percentage = total ? ((value / total) * 100).toFixed(1) : "0.0";
+                                return `${context.label}: ${value} (${percentage}%)`;
+                            }
                         }
+                    },
+                    datalabels: {
+                        color: "#fff",
+                        formatter: (value, context) => {
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return `${value}\n(${percentage}%)`;
+                        },
+                        backgroundColor: "#00000099",
+                        borderRadius: 4,
+                        padding: 6
                     }
                 }
-            }
-        }
-    });
+            },
+            plugins: [ChartDataLabels]
+        });
 
-    document.getElementById("text").textContent = "Chart updated successfully.";
+        document.getElementById("text").textContent = "Biểu đồ đã được cập nhật.";
+    } catch (error) {
+        console.error(error);
+        document.getElementById("text").textContent = error.message || "Đã xảy ra lỗi.";
+    }
 }
-
 
 
 window.loadMarketShare = loadMarketShare;

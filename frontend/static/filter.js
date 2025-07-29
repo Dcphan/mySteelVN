@@ -83,22 +83,37 @@ function selector_function(companyData) {
       }
     }
 
-function pie_selector_function(productData){
+function pie_selector_function(productData) {
     const product_select = document.getElementById("product-select");
-    for (const product of productData){
+    product_select.className = "grid grid-cols-2 sm:grid-cols-3 gap-4"; // Layout for parent container
+
+    for (const product of productData) {
+        // Create wrapper div
+        const wrapper = document.createElement("div");
+        wrapper.className = "flex items-center space-x-2";
+
+        // Create checkbox input
         const input = document.createElement("input");
-        const label = document.createElement("label");
         input.type = "checkbox";
-        input.id = product;
+        input.id = product.replace(/\s+/g, '-').toLowerCase(); // make id safe
         input.value = product;
-        console.log(input);
+        input.className = "w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500";
+
+        // Create label
+        const label = document.createElement("label");
         label.textContent = product;
-        label.htmlFor = product;
-        console.log(label);
-        product_select.appendChild(input);
-        product_select.appendChild(label);
+        label.htmlFor = input.id;
+        label.className = "text-gray-700 text-sm";
+
+        // Append input and label to wrapper
+        wrapper.appendChild(input);
+        wrapper.appendChild(label);
+
+        // Append wrapper to container
+        product_select.appendChild(wrapper);
     }
 }
+
 
 async function pie_selector() {
       try {

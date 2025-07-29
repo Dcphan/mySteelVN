@@ -24,6 +24,10 @@ function changeFilterTable(){
     const filterZoneDiv = document.createElement("div");
     const filterRowDiv = document.createElement("div");
     const tableHeader = document.getElementById("summary-table-header")
+      if (!tableHeader) {
+    console.error("Summary table elements not found in the DOM.");
+    return;
+  }
 
 
     filterInput.innerHTML = ""
@@ -232,6 +236,7 @@ function drag_and_drop() {
     });
   });
 }
+
 
 // Initialize drag-and-drop when DOM is ready
 document.addEventListener("DOMContentLoaded", async() => {

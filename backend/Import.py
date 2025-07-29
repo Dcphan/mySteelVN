@@ -3,7 +3,7 @@ import os
 import re
 from datetime import datetime
 import uuid
-from backend.db import SteelDatabaseManager
+from db import SteelDatabaseManager
 
 
 class SteelDataProcessor:

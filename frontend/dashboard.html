@@ -1,54 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Steel Dashboard</title>
-    <link rel="stylesheet" href="/static/dashboard.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.3/build/global/luxon.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Steel Dashboard</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div id="main-container">
-        <h1>Dashboard Thép</h1>
-        
-        <h2>Select up to 4 Steel Products</h2>
+<body class="bg-gray-100 text-gray-900 min-h-screen font-sans antialiased">
 
-        <label for="table">Choose a table:</label>
-        <select id="table">
-            <option value="Production">Production</option>
-            <option value="Inventory">Inventory</option>
-            <option value="Domestic">Domestic</option>
-            <option value="Export">Export</option>
+  <!-- ✅ Top Navbar -->
+  {% include "components/navbar.html" %}
+
+  <!-- ✅ Main Wrapper -->
+  <main class="max-w-6xl mx-auto px-6 md:px-10 pt-6 md:pt-10 pb-10">
+
+    <div class="bg-white p-6 rounded-xl shadow w-full">
+
+      <h2 class="text-xl md:text-2xl font-semibold mb-4">📊 Select up to 4 Steel Products</h2>
+
+      <!-- Table Select -->
+      <div class="mb-4">
+        <label for="table" class="block font-medium mb-1">Choose a table:</label>
+        <select id="table" class="w-full border rounded px-3 py-2">
+          <option value="Production">Production</option>
+          <option value="Inventory">Inventory</option>
+          <option value="Domestic">Domestic</option>
+          <option value="Export">Export</option>
         </select>
-        <br>
+      </div>
 
-        <div id="container"></div>
+      <!-- Container for product list -->
+      <div id="container" class="mb-4"></div>
 
-        <p id="warning" style="color: red; display: none;">
-            You can select up to 4 products only.
-        </p>        
-        
-        <div class="input-group">
-            <label for="start-month">Từ Tháng:</label> <input type="month" id="start-month"> </div>
-        
-        <div class="input-group">
-            <label for="end-month">Đến Tháng:</label> <input type="month" id="end-month"> </div>
-        
-        <button onclick="loadAndRenderChart()">Render Chart</button>
+      <!-- Warning -->
+      <p id="warning" class="text-red-600 hidden mb-4">You can select up to 4 products only.</p>
 
-        <p id="text">Code run here</p>
-        
-        <div class="chart-container">
-            <canvas id="myChart"></canvas>
+      <!-- Date Pickers -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label for="start-month" class="block font-medium mb-1">Từ Tháng:</label>
+          <input type="month" id="start-month" class="w-full border rounded px-3 py-2" />
         </div>
-    </div>
+        <div>
+          <label for="end-month" class="block font-medium mb-1">Đến Tháng:</label>
+          <input type="month" id="end-month" class="w-full border rounded px-3 py-2" />
+        </div>
+      </div>
 
-    <script src="/static/chart.js?v=3"></script>
-    <script src="/static/filter.js"></script>
-    <script>
+      <!-- Button -->
+      <button onclick="loadAndRenderChart()"
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+        Render Chart
+      </button>
+
+      <!-- Debug Text -->
+      <p id="text" class="text-sm text-gray-500 mt-2">Code run here</p>
+
+      <!-- Chart -->
+      <div class="mt-6">
+        <canvas id="myChart" class="w-full h-96"></canvas>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-sm text-gray-500 py-6">
+    &copy; 2025 Steel Dashboard
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/chart.js?v=3"></script>
+  <script src="/static/filter.js?v=3"></script>
+  <script>
     window.onload = selector;
-    </script>
+  </script>
 </body>
 </html>

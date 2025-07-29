@@ -1,52 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Excel Export Tool (Backend Powered)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/static/export.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Excel Export Tool</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="antialiased">
-    <div class="container">
-        <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-6">Excel Export Tool (Backend Powered)</h1>
+<body class="bg-gray-100 text-gray-800 min-h-screen font-sans antialiased">
 
-        <!-- Message Box -->
-        <div id="messageBox" class="hidden"></div>
+  <!-- Top Navbar -->
+  {% include "components/navbar.html" %}
 
-        <!-- Download Section -->
-        <section class="p-6 bg-gray-50 rounded-lg shadow-inner">
-            <h2 class="section-title">Download Excel Report from Backend</h2>
-            <p class="text-gray-700 mb-6">
-                This tool will request an Excel file containing Inventory, Production, Export, and Domestic data
-                directly from the backend server.
-            </p>
-            <div class="mb-6">
-                <label for="exportFileName" class="block text-gray-700 text-sm font-bold mb-2">Report File Name:</label>
-                <input type="text" id="exportFileName" class="input-field" value="san_luong_report.xlsx">
-            </div>
-            <button id="downloadXLSXBtn" class="btn btn-primary w-full">
-                Download Excel Report
-                <span id="loadingSpinner" class="loading-spinner hidden"></span>
-            </button>
-        </section>
+  <!-- Main Content -->
+  <main class="max-w-5xl mx-auto pt-6 md:pt-10 px-6 md:px-10">
 
-        <!-- Data Preview -->
-        <section class="p-6 bg-gray-50 rounded-lg shadow-inner">
-            <h2 class="section-title">Data Preview</h2>
-            <p class="text-gray-700 mb-4">
-                Click the button below to fetch and display the data that will be included in the Excel report.
-            </p>
-            <button id="loadPreviewBtn" class="btn btn-primary w-full">
-                Load Data Preview
-                <span id="previewLoadingSpinner" class="loading-spinner hidden"></span>
-            </button>
-            <div id="dataPreviewContent" class="mt-4">
-                <p class="text-gray-600 text-sm italic">Data preview will appear here...</p>
-            </div>
-        </section>
+    <!-- Page Header -->
+    <div>
+      <h1 class="text-3xl md:text-4xl font-bold mb-2">📊 Excel Export Tool</h1>
+      <p class="text-gray-600 mb-6">Backend-powered Excel reports for inventory, production, and more.</p>
+
+      <!-- Message Box -->
+      <div id="messageBox" class="hidden bg-slate-200 text-gray-800 p-4 rounded-lg mb-6 text-sm text-center"></div>
+
+      <!-- Download Section -->
+      <section class="bg-white rounded-xl shadow p-6 mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Download Excel Report</h2>
+        <p class="text-gray-600 mb-4">
+          Generate and download Excel reports directly from backend data.
+        </p>
+
+        <label for="exportFileName" class="block font-medium mb-1">Report File Name</label>
+        <input type="text" id="exportFileName"
+               class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+               value="san_luong_report.xlsx" />
+
+        <button id="downloadXLSXBtn"
+                class="w-full mt-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition">
+          Download Excel Report
+          <span id="loadingSpinner"
+                class="hidden ml-2 inline-block w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin align-middle">
+          </span>
+        </button>
+      </section>
+
     </div>
-
-    <script src="/static/export.js"></script>
+  </main>
+  <script src="/static/export.js?v=3"></script>
 </body>
 </html>

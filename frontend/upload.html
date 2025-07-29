@@ -2,12 +2,119 @@
 <html>
 <head>
     <title>Upload Excel File</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h2>Upload Excel File</h2>
-    <form action="/upload_excel" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".xlsx,.xls"/>
-        <input type="submit" value="Upload"/>
-    </form>
+<body class="min-h-screen bg-gray-100 font-sans antialiased">
+
+    <!-- Top Navbar -->
+    {% include "components/navbar.html" %}
+
+    <!-- Main Content -->
+    <main class="pt-24 px-4">
+        <div class="container mx-auto max-w-3xl p-10 bg-white rounded-2xl shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">Upload Excel File</h2>
+
+            <!-- Click-only file input -->
+            <label for="fileInput" class="block w-full p-4 border-2 border-dashed border-blue-400 text-blue-600 rounded-lg text-center cursor-pointer hover:bg-blue-50">
+                Click to select .xlsx files
+                <input id="fileInput" type="file" accept=".xlsx" class="hidden" multiple />
+            </label>
+
+            <!-- Upload Queue -->
+            <div id="fileQueue" class="mt-4 space-y-2"></div>
+
+            <!-- Action buttons -->
+            <div class="flex justify-end mt-4 gap-2">
+                <button id="uploadBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Upload</button>
+                <button id="cancelBtn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileQueue = document.getElementById('fileQueue');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const MAX_MB = 10;
+
+        let selectedFiles = [];
+
+        function formatSize(bytes) {
+            return bytes < 1024 * 1024
+                ? (bytes / 1024).toFixed(1) + ' KB'
+                : (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function renderQueue() {
+            fileQueue.innerHTML = '';
+            selectedFiles.forEach((file, index) => {
+                const isTooBig = file.size > MAX_MB * 1024 * 1024;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex justify-between items-center bg-gray-100 rounded px-4 py-2 border';
+
+                wrapper.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="bg-green-100 text-green-700 font-bold text-xs px-2 py-1 rounded">XLSX</div>
+                        <div>
+                            <p class="text-sm font-medium">${file.name}</p>
+                            <p class="text-xs text-gray-500">
+                                ${formatSize(file.size)}
+                                ${isTooBig ? '<span class="text-red-500 ml-2">Exceeds 10MB limit</span>' : ''}
+                            </p>
+                        </div>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700" onclick="removeFile(${index})">✕</button>
+                `;
+
+                fileQueue.appendChild(wrapper);
+            });
+        }
+
+        window.removeFile = function(index) {
+            selectedFiles.splice(index, 1);
+            renderQueue();
+        };
+
+        fileInput.addEventListener('change', () => {
+            Array.from(fileInput.files).forEach(newFile => {
+                if (
+                    newFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" &&
+                    !selectedFiles.find(f => f.name === newFile.name && f.size === newFile.size)
+                ) {
+                    selectedFiles.push(newFile);
+                }
+            });
+            renderQueue();
+            fileInput.value = '';
+        });
+
+        uploadBtn.addEventListener('click', () => {
+            if (selectedFiles.length === 0) {
+                alert("No files to upload.");
+                return;
+            }
+
+            const formData = new FormData();
+            selectedFiles.forEach(file => formData.append("files", file));
+
+            fetch("/upload_excel", {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                alert("Files uploaded successfully!");
+                selectedFiles = [];
+                renderQueue();
+            }).catch(() => {
+                alert("Upload failed.");
+            });
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            selectedFiles = [];
+            renderQueue();
+        });
+    </script>
 </body>
 </html>
