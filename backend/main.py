@@ -44,9 +44,9 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
-db_manager = SteelDatabaseManager(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
-table_db = TableDatabase(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
-export_handler = Export(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
+db_manager = SteelDatabaseManager(dbname="neondb", user="neondb_owner", password="npg_3vSCDycG9jUQ")
+table_db = TableDatabase(dbname="neondb", user="neondb_owner", password="npg_3vSCDycG9jUQ")
+export_handler = Export(dbname="neondb", user="neondb_owner", password="npg_3vSCDycG9jUQ")
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
