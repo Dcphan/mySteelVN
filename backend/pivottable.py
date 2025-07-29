@@ -5,7 +5,7 @@ import time
 import json
 from collections import defaultdict
 
-db_manager = SteelDatabaseManager(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
+db_manager = SteelDatabaseManager(dbname="neondb", user="neondb_owner", password="npg_3vSCDycG9jUQ")
 
 class pivotTable:
     def __init__(self):
