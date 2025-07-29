@@ -59,7 +59,8 @@ class SteelDatabaseManager:
             user=user,
             password=password,
             host=host,
-            port=port
+            port=port,
+            sslmode='require'
         )
         self.engine = create_engine(f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}')
 
