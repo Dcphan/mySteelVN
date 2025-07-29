@@ -73,7 +73,7 @@ function selector_function(companyData) {
 
  async function selector() {
       try {
-        const res = await fetch("http://mysteelvn.onrender.com/api/product-data");
+        const res = await fetch("https://mysteelvn.onrender.com/api/product-data");
         if (!res.ok) throw new Error("Failed to fetch");
 
         const companyData = await res.json();
@@ -117,7 +117,7 @@ function pie_selector_function(productData) {
 
 async function pie_selector() {
       try {
-        const res = await fetch("http://mysteelvn.onrender.com/api/product-option");
+        const res = await fetch("https://mysteelvn.onrender.com/api/product-option");
         if (!res.ok) throw new Error("Failed to fetch");
 
         const data = await res.json();
