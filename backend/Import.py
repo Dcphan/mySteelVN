@@ -12,7 +12,7 @@ class SteelDataProcessor:
         self.skiprows = skiprows
         self.df = None
         self.date = self.extract_date_from_filename()
-        self.db_manager = SteelDatabaseManager(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
+        self.db_manager = SteelDatabaseManager(dbname="neondb", user="neondb_owner", password="npg_3vSCDycG9jUQ")
 
         # Output DataFrames
         self.product_df = pd.DataFrame(columns=['id', 'producttype', 'companyname'])
