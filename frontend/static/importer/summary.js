@@ -2,7 +2,7 @@
     let tomSelectInstance = null;
 
     export async function loadFilterOptions(filter) {
-    const url = new URL('http://127.0.0.1:8000/api/filtering-data'); 
+    const url = new URL('http://127.0.0.1:8000/api/importer-filtering-data'); 
     url.searchParams.set("filter", filter);
     const res = await fetch(url);
     const options = await res.json();
@@ -19,7 +19,7 @@
 
     
     export async function loadRowOptions(filter) {
-      const url = new URL('http://127.0.0.1:8000/api/filtering-data'); 
+      const url = new URL('http://127.0.0.1:8000/api/importer-filtering-data'); 
       url.searchParams.set("filter", filter);
       const res = await fetch(url);
       const options = await res.json();
@@ -77,7 +77,7 @@
       
       if (rows_fields.length > 1) {
         
-      const url = new URL("http://127.0.0.1:8000/api/pivot-data");
+      const url = new URL("http://127.0.0.1:8000/api/importer-pivot-data");
 
       // Only set filter_field if provided
       if (filter_fields !== null && filter_fields !== undefined) {
@@ -101,7 +101,7 @@
       fetchTableWithTwoRows(filter_fields, rows_fields, values_fields, data);
 
       } else if ( rows_fields.length == 1) {
-        const url = new URL("http://127.0.0.1:8000/api/single-pivot-summary");
+        const url = new URL("http://127.0.0.1:8000/api/importer-single-pivot-summary");
         url.searchParams.set("row_field", rows_fields[0]);
         url.searchParams.set("date", date);
         rows.forEach(r => url.searchParams.append("item", r));
@@ -119,7 +119,7 @@
     }
 
     async function fetchTableWithOneRow(filter_fields, rows_fields, values_fields, data){
-      const tableBody = document.getElementById("summary-table");
+      const tableBody = document.getElementById("summary-table-body");
       tableBody.innerHTML = '';
 
       const grouped = {};
@@ -140,8 +140,6 @@
           tr.appendChild(td);
         }
         tableBody.appendChild(tr);
-        
-
 
       });
 
@@ -153,7 +151,7 @@
 
     async function fetchTableWithTwoRows(filter_fields, rows_fields, values_fields, data){      
       // FIXING THE TABLE BODY
-      const tableBody = document.getElementById("summary-table");
+      const tableBody = document.getElementById("summary-table-body");
       tableBody.innerHTML = '';
 
       const grouped = {};

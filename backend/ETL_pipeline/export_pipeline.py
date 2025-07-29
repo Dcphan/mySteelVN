@@ -5,7 +5,7 @@ from ETL_pipeline import parser, regex_pattern, country_detection, country_dicti
 from ETL_pipeline.unit_conversion import unit_conversion as unit_conversion_dict, unit_name_to_code
 
 
-class imported_pipeline():
+class export_pipeline():
     def __init__(self, file_path: str, import_file: object, address: list, country_detect: object,
                  hs_and_currency_converter: object, convert_unit: object):
         self.file_path = file_path
@@ -24,7 +24,7 @@ class imported_pipeline():
 
     def produce_check_xlsx(self):
         required_cols = [
-            'DATE', 'TAX CODE', 'IMPORTER', 'ADDRESS', 'EXPORTER',
+            'DATE', 'TAX CODE', 'EXPORTER', 'ADDRESS', 'IMPORTER',
             'HS CODE', 'CURRENCY', 'UNIT PRICE', 'UNIT', 'QUANTITY', 'EXCHANGE RATE', 'PLACE OF RECEIPT', 
             'PLACE OF LOADING', 'PRODUCT DESCRIPTION'
         ]
@@ -34,6 +34,7 @@ class imported_pipeline():
 
         has_amount = 'AMOUNT' in self.import_file.columns
         cols_to_load = required_cols.copy()
+
 
 
         
@@ -98,7 +99,7 @@ class imported_pipeline():
         excel["COMMODITY"] = excel["HS CODE"].apply(safe_hs_lookup)
 
         # Country detection
-        excel['EXPORTED COUNTRY'] = excel['COMBINED ADDRESS'].apply(
+        excel['IMPORTED COUNTRY'] = excel['COMBINED ADDRESS'].apply(
             lambda x: self.country_detect.detect_country_full(x)
         )
 
@@ -110,27 +111,27 @@ class imported_pipeline():
 
         
 
-        excel = excel.dropna(subset=['IMPORTER'])
+        excel = excel.dropna(subset=['EXPORTER'])
 
         # Final tables
-        importer_i_df = excel[['TAX CODE', 'IMPORTER', 'ADDRESS']].rename(
-            columns={'TAX CODE': 'mst', 'IMPORTER': 'company', 'ADDRESS': 'address'}
+        exporter_e_df = excel[['TAX CODE', 'EXPORTER', 'ADDRESS']].rename(
+            columns={'TAX CODE': 'mst', 'EXPORTER': 'company', 'ADDRESS': 'address'}
         ).drop_duplicates(subset='mst')
 
-        product_i_df = excel[['HS CODE', 'EXPORTED COUNTRY', 'COMBINED ADDRESS', 'COMMODITY', 'PLACE OF RECEIPT', 'PLACE OF LOADING', 'PRODUCT DESCRIPTION']].rename(
-            columns={'HS CODE': 'hs_code', 'EXPORTED COUNTRY': 'country',
+        product_i_df = excel[['HS CODE', 'IMPORTED COUNTRY', 'COMBINED ADDRESS', 'COMMODITY', 'PLACE OF RECEIPT', 'PLACE OF LOADING', 'PRODUCT DESCRIPTION']].rename(
+            columns={'HS CODE': 'hs_code', 'IMPORTED COUNTRY': 'country',
                      'COMBINED ADDRESS': 'address', 'COMMODITY': 'commodity',
                      'PLACE OF RECEIPT': 'place_of_r', 'PLACE OF LOADING': 'place_of_l',
                      'PRODUCT DESCRIPTION': 'product_description'}
         ).drop_duplicates()
 
         transaction_df = excel[['TAX CODE', 'QUANTITY', 'UNIT PRICE', 'EXCHANGE RATE',
-                                'AMOUNT', 'DATE', 'EXPORTER', 'HS CODE', 'EXPORTED COUNTRY', 'COMBINED ADDRESS', 'ORIGIN UNIT PRICE', 'UNIT_CODE', 'CURRENCY',
+                                'AMOUNT', 'DATE', 'IMPORTER', 'HS CODE', 'IMPORTED COUNTRY', 'COMBINED ADDRESS', 'ORIGIN UNIT PRICE', 'UNIT_CODE', 'CURRENCY',
                                 'ORIGIN AMOUNT', 'ORIGIN QUANTITY', 'PLACE OF RECEIPT', 'PLACE OF LOADING', 'PRODUCT DESCRIPTION'
                                  ]].rename(
             columns={'TAX CODE': 'mst', 'QUANTITY': 'quantity', 'UNIT PRICE': 'unit_price',
                      'EXCHANGE RATE': 'exchange_rate', 'AMOUNT': 'amount', 'DATE': 'date',
-                     'EXPORTER': 'exporter', 'HS CODE': 'hs_code', 'EXPORTED COUNTRY': 'country',
+                     'IMPORTER': 'importer', 'HS CODE': 'hs_code', 'IMPORTED COUNTRY': 'country',
                      'COMBINED ADDRESS': 'address', 'UNIT_CODE': 'unit', 'CURRENCY': 'currency', 'ORIGIN UNIT PRICE': 'origin_unit_price',
                      'ORIGIN AMOUNT': 'origin_amount', 'ORIGIN QUANTITY': 'origin_quantity',
                      'PLACE OF RECEIPT': 'place_of_r', 'PLACE OF LOADING': 'place_of_l',
@@ -138,6 +139,5 @@ class imported_pipeline():
         )
 
         print(f"transaction dataframe: {transaction_df}")
-        
-
-        return importer_i_df, product_i_df, transaction_df
+    
+        return exporter_e_df, product_i_df, transaction_df

@@ -1,0 +1,19 @@
+{
+  "name": "static",
+  "version": "1.0.0",
+  "main": "chart.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chart.js": "^4.5.0",
+    "datatables.net": "^2.3.2",
+    "datatables.net-dt": "^2.3.2",
+    "jquery": "^3.7.1"
+  },
+  "devDependencies": {},
+  "description": ""
+}

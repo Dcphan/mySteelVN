@@ -1,15 +1,19 @@
+let tomSelectInstance = null;
+
 function selectAllItems() {
   if (tomSelectInstance) {
-    const allValues = tomSelectInstance.options;
-    const values = Object.keys(allValues);
-    tomSelectInstance.setValue(values);
+    // Get all option values
+    const allValues = Object.values(tomSelectInstance.options).map(option => option.value);
+    tomSelectInstance.setValue(allValues); // Set all values
   }
+  console.log("Click Select");
 }
 
 function deselectAllItems() {
   if (tomSelectInstance) {
-    tomSelectInstance.clear(true);
+    tomSelectInstance.clear(true); // Clear all selected values
   }
+  console.log("Click Deselect");
 }
 
 function sortData(data, sortValue) {
