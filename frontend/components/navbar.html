@@ -1,0 +1,43 @@
+<!-- templates/components/navbar.html -->
+<nav class="w-full bg-gray-800 text-white flex flex-wrap items-center justify-between px-4 py-3 shadow-md">
+  <!-- Logo -->
+  <a href="/" class="flex items-center space-x-2">
+    <div class="bg-white/10 backdrop-blur-md rounded-xl p-1 shadow-lg">
+      <img src="/static/img/vi-logo.1289dc2.png"
+           alt="Logo"
+           class="w-10 h-10 sm:w-12 sm:h-12 object-contain transition-transform duration-300 hover:scale-105" />
+    </div>
+    <span class="hidden sm:inline font-semibold text-lg">Dashboard</span>
+  </a>
+
+  <!-- Navigation Links -->
+  <div class="flex flex-wrap gap-3 mt-4 sm:mt-0 sm:ml-6">
+    <a href="/upload" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
+      <span>📤</span><span class="hidden sm:inline">Upload</span>
+    </a>
+    <a href="/chart/bar" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
+      <span>📊</span><span class="hidden sm:inline">Bar Chart</span>
+    </a>
+    <a href="/chart/pie" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
+      <span>🥧</span><span class="hidden sm:inline">Pie Chart</span>
+    </a>
+    <a href="/excel-tool" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
+      <span>📁</span><span class="hidden sm:inline">Export Excel</span>
+    </a>
+    <a href="/importer/upload" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
+      <span>📤</span><span class="hidden sm:inline">Upload</span>
+    </a>
+    <a href="/importer/pivot-table" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
+      <span>📊</span><span class="hidden sm:inline">Pivot Table</span>
+    </a>
+    <a href="/xnk/data-record" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
+      <span>🗃️</span><span class="hidden sm:inline">Data Record</span>
+    </a>
+    <a href="/exporter/upload" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
+      <span>📤</span><span class="hidden sm:inline">Upload</span>
+    </a>
+    <a href="/exporter/pivot-table" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
+      <span>📊</span><span class="hidden sm:inline">Pivot Table</span>
+    </a>
+  </div>
+</nav>
