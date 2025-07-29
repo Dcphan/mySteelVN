@@ -5,9 +5,9 @@ from backend.ETL_pipeline import parser, regex_pattern, country_detection, count
 
 class XNK_pipeline:
     def __init__(self, file_path: str,
-                 dbname: str = "steel_database",
-                 user: str = "mysteelvn",
-                 password: str = "cjLVuBdaSd5vtst"):
+                 dbname="neondb",
+                 user="neondb_owner",
+                 password="npg_3vSCDycG9jUQ"):
         self.file_path = file_path
         self.db_manager = SteelDatabaseManager(dbname=dbname, user=user, password=password)
         self.address_cols = []
