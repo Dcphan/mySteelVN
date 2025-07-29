@@ -6,19 +6,26 @@ from collections import defaultdict
 
 class TableDatabase:
     def __init__(self, dbname, user, password, host='ep-fragrant-block-a1p5gndb-pooler.ap-southeast-1.aws.neon.tech', port=5432):
-        self.conn = psycopg2.connect(
-            dbname=dbname,
-            user=user,
-            password=password,
-            host=host,
-            port=port,
-            sslmode='require'
-        )
+        self.db_params = {
+            'dbname': dbname,
+            'user': user,
+            'password': password,
+            'host': host,
+            'port': port,
+            'sslmode': 'require'
+        }
+        self.conn = psycopg2.connect(**self.db_params)
+
+    def reconnect_if_closed(self):
+        if self.conn.closed:
+            print("[INFO] Connection closed, reconnecting...")
+            self.conn = psycopg2.connect(**self.db_params)
 
     def close(self):
         self.conn.close()
 
     def table_data(self, products, month):
+        self.reconnect_if_closed()
         cur = self.conn.cursor()
         product_placeholders = ','.join(['%s'] * len(products))
 
@@ -53,8 +60,6 @@ class TableDatabase:
             print(f"[ERROR] Failed to fetch table data: {e}")
             self.conn.rollback()
             return []
-
-
 
     def transform_to_dict(self, raw_data):
         result_dict = defaultdict(lambda: {
@@ -95,6 +100,7 @@ class TableDatabase:
         return result_list
 
     def get_product_and_company(self):
+        self.reconnect_if_closed()
         cursor = self.conn.cursor()
         try:
             query = 'SELECT CompanyName, ProductType, ID FROM Product'
@@ -108,11 +114,11 @@ class TableDatabase:
             return result
         except Exception as e:
             print(f"Error in get_product_and_company: {e}")
-            self.conn.rollback()  # 👈 This fixes the broken transaction
+            self.conn.rollback()
             return {}
 
-
     def get_product(self):
+        self.reconnect_if_closed()
         cursor = self.conn.cursor()
         query = "SELECT DISTINCT ProductType FROM Product"
         cursor.execute(query)
@@ -120,6 +126,7 @@ class TableDatabase:
         return [item[0] for item in rows]
 
     def get_month_summary(self, category, id: list, start, end):
+        self.reconnect_if_closed()
         cursor = self.conn.cursor()
         id_placeholders = ','.join(['%s'] * len(id))
         params = id + [start, end]
@@ -177,9 +184,6 @@ class TableDatabase:
             print(f"[ERROR] Failed to execute summary query: {e}")
             self.conn.rollback()
             return []
-
-
-            
 
     def format_for_table(self, rows):
         combined_keys = set()
