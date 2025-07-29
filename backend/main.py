@@ -187,7 +187,6 @@ def get_product_data():
 
 
 # FILE XUAT NHAP KHAU
-export_handler = Export(dbname="steel_database", user="mysteelvn", password="cjLVuBdaSd5vtst")
 
 @app.get('/upload_selection')
 def upload_selection_page(request: Request):
