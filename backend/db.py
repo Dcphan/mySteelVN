@@ -6,7 +6,7 @@ import psycopg2
 from psycopg2.extras import execute_values
 from sqlalchemy import create_engine, text
 from decimal import Decimal
-from ETL_pipeline import hs_code
+from backend.ETL_pipeline import hs_code
 import numpy as np
 import time
 import math 
