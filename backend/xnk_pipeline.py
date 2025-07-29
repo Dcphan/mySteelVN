@@ -1,7 +1,7 @@
 import pandas as pd
 import os
-from db import SteelDatabaseManager
-from ETL_pipeline import parser, regex_pattern, country_detection, country_dictionary, hs_and_currency, hs_code, unit, unit_conversion, import_pipeline, export_pipeline
+from backend.db import SteelDatabaseManager
+from backend.ETL_pipeline import parser, regex_pattern, country_detection, country_dictionary, hs_and_currency, hs_code, unit, unit_conversion, import_pipeline, export_pipeline
 
 class XNK_pipeline:
     def __init__(self, file_path: str,
