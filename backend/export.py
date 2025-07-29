@@ -13,7 +13,8 @@ class Export:
             user=user,
             password=password,
             host=host,
-            port=port
+            port=port,
+            sslmode='require'
         )
 
     def read_df(self, category):
