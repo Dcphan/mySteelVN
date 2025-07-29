@@ -11,7 +11,8 @@ class TableDatabase:
             user=user,
             password=password,
             host=host,
-            port=port
+            port=port,
+            sslmode='require'
         )
 
     def close(self):
