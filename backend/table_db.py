@@ -5,7 +5,7 @@ from datetime import datetime
 from collections import defaultdict
 
 class TableDatabase:
-    def __init__(self, dbname, user, password, host='localhost', port=5432):
+    def __init__(self, dbname, user, password, host='ep-fragrant-block-a1p5gndb-pooler.ap-southeast-1.aws.neon.tech', port=5432):
         self.conn = psycopg2.connect(
             dbname=dbname,
             user=user,
