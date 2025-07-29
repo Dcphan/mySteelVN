@@ -207,10 +207,6 @@ class convert_to_Excel():
         return None
     
 
-file_path = r"D:\MySteel\Data Hải quan\T1-2025\72-NK-T1.2025.xlsx"
-data = convert_to_Excel(file_path)
-print(data.df.isna().sum())
-
     
 
 
