@@ -6,8 +6,8 @@ const loadPreviewBtn = document.getElementById('loadPreviewBtn');
 const previewLoadingSpinner = document.getElementById('previewLoadingSpinner');
 const dataPreviewContent = document.getElementById('dataPreviewContent');
 
-const BACKEND_EXCEL_URL = 'http://127.0.0.1:8000/export-excel';
-const BACKEND_PREVIEW_URL = 'http://127.0.0.1:8000/get-all-pivot-data';
+const BACKEND_EXCEL_URL = 'https://mysteelvn.onrender.com/export-excel';
+const BACKEND_PREVIEW_URL = 'https://mysteelvn.onrender.com/get-all-pivot-data';
 
 function showMessage(message, type = 'info') {
     messageBox.textContent = message;
