@@ -18,22 +18,99 @@ function renderChart(data) {
     }
 
     chartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: data.labels,
-            datasets: cleanedDatasets
+    type: "line",
+    data: {
+        labels: data.labels, // Assumes full date/year strings like "2021", "2022", etc.
+        datasets: cleanedDatasets // Ensure each has `label`, `data`, and optionally `borderColor`, etc.
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false,
         },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left'
+        plugins: {
+            title: {
+                display: true,
+                text: 'Sales Trends Over Time',
+                font: {
+                    size: 20
+                },
+                padding: {
+                    top: 10,
+                    bottom: 30
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const label = context.dataset.label || '';
+                        const value = context.formattedValue;
+                        return `${label}: ${value}`;
+                    }
+                }
+            },
+            legend: {
+                position: 'top',
+                labels: {
+                    font: {
+                        size: 12
+                    },
+                    usePointStyle: true
                 }
             }
+        },
+        scales: {
+            x: {
+                type: 'category', // Can be 'time' if labels are dates (see note below)
+                ticks: {
+                    autoSkip: true,
+                    maxRotation: 45,
+                    minRotation: 0
+                },
+                title: {
+                    display: true,
+                    text: 'Year',
+                    font: {
+                        size: 14
+                    }
+                },
+                grid: {
+                    display: false
+                }
+            },
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Value',
+                    font: {
+                        size: 14
+                    }
+                },
+                grid: {
+                    color: '#f0f0f0'
+                }
+            }
+        },
+        elements: {
+            line: {
+                tension: 0.1, // Smooth bezier curve
+                borderWidth: 2
+            },
+            point: {
+                radius: 4,
+                hoverRadius: 6,
+                pointStyle: 'circle'
+            }
         }
-    });
+    }
+});
+
 }
 
 function loadAndRenderChart() {
@@ -131,11 +208,30 @@ async function loadMarketShare() {
             },
             options: {
                 responsive: true,
+                layout: {
+                    padding: 20 // Prevents edge clipping when exporting as image
+                },
                 plugins: {
                     title: {
                         display: true,
                         text: `Thị phần: ${productType} - ${month}`,
-                        font: { size: 18 }
+                        font: {
+                            size: 20,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 20
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 14
+                            },
+                            padding: 16
+                        }
                     },
                     tooltip: {
                         callbacks: {
@@ -148,20 +244,35 @@ async function loadMarketShare() {
                         }
                     },
                     datalabels: {
-                        color: "#fff",
+                        color: "#ffffff",
                         formatter: (value, context) => {
+                            const label = context.chart.data.labels[context.dataIndex];
                             const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                             const percentage = ((value / total) * 100).toFixed(1);
-                            return `${value}\n(${percentage}%)`;
+                            return `${label}\n${value} (${percentage}%)`;
                         },
-                        backgroundColor: "#00000099",
-                        borderRadius: 4,
-                        padding: 6
+                        font: {
+                            weight: 'bold',
+                            size: 12
+                        },
+                        backgroundColor: "#000000cc",
+                        borderRadius: 6,
+                        padding: {
+                            top: 4,
+                            bottom: 4,
+                            left: 6,
+                            right: 6
+                        },
+                        display: 'auto',
+                        align: 'center',
+                        anchor: 'center',
+                        clip: false
                     }
                 }
             },
             plugins: [ChartDataLabels]
         });
+
 
         document.getElementById("text").textContent = "Biểu đồ đã được cập nhật.";
     } catch (error) {

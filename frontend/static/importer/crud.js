@@ -51,7 +51,7 @@ async function deleteRow(id) {
   if (!confirm("Are you sure to delete this company?")) return;
 
   try {
-    const response = await fetch(`/xnk/api/delete?id=${id}`, {
+    const response = await fetch(`/importer/api/delete?id=${id}`, {
       method: "DELETE",
     });
 
@@ -69,7 +69,7 @@ async function fetchData(date, limit, offset) {
   if (limit < 1 || limit > 1000) throw new Error("Limit must be between 1 and 1000");
   if (offset < 0) throw new Error("Offset cannot be negative");
 
-  const url = new URL("http://mysteelvn.onrender.com/xnk/api/data");
+  const url = new URL("http://127.0.0.1:8000/importer/api/data");
   url.searchParams.set("date", date);
   url.searchParams.set("offset", offset);
   url.searchParams.set("limit", limit);
@@ -98,13 +98,19 @@ async function loadMore() {
     const tr = document.createElement("tr");
     tr.className = "border-t hover:bg-gray-50";
     tr.id = `row-${row.id}`;
-    tr.innerHTML = `
+  tr.innerHTML = `
       <td class="px-6 py-4">${row.id}</td>
       <td class="px-6 py-4">${row.date}</td>
       <td class="px-6 py-4">${row.tax_code}</td>
-      <td class="px-6 py-4">${row.importer}</td>
+
+      <!-- Sticky Column 1 -->
+      <td class="sticky left-0 w-[200px] bg-white z-10 px-6 py-4">${row.importer}</td>
+
       <td class="px-6 py-4">${row.importer_address}</td>
-      <td class="px-6 py-4">${row.country}</td>
+
+      <!-- Sticky Column 2 -->
+      <td class="sticky left-[200px] w-[200px] bg-white z-10 px-6 py-4">${row.country}</td>
+
       <td class="px-6 py-4">${row.exporter}</td>
       <td class="px-6 py-4">${row.exporter_address}</td>
       <td class="px-6 py-4">${row.hs_code}</td>
@@ -113,7 +119,12 @@ async function loadMore() {
       <td class="px-6 py-4">${row.unit_price}</td>
       <td class="px-6 py-4">${row.quantity}</td>
       <td class="px-6 py-4">${row.amount}</td>
-      <td class="px-6 py-4 space-x-2">
+      <td class="px-6 py-4">${row.place_of_r}</td>
+      <td class="px-6 py-4">${row.place_of_l}</td>
+      <td class="px-6 py-4">${row.product_description}</td>
+      <td class="px-6 py-4 space-x-2"></td>
+    
+
         <button 
           class="text-blue-600 hover:underline" 
           onclick="editRow(

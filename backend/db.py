@@ -684,30 +684,59 @@ class SteelDatabaseManager:
             print(f"Error fetching distinct {filter}: {e}")
             return []
 
-    def get_XNK_data(self, date: str, limit, offset):
-        
-        query = """
-        SELECT 
-            t.id as id,
-            t.mst as tax_code,
-            t.quantity as quantity,
-            t.unit_price as unit_price,
-            t.exchange_rate as exchange_rate,
-            t.amount as amount,
-            t.date as date,
-            t.exporter as exporter,
-            i.company AS importer,
-            i.address AS importer_address,
-            p.commodity as commodity,
-            p.hs_code as hs_code,
-            p.address as exporter_address,
-            p.country as country
-        FROM transaction t
-        JOIN product_i p ON p.id = t.product_id
-        JOIN importer_i i ON i.mst = t.mst
-        WHERE t.date = :date
-        LIMIT :limit OFFSET :offset
-    """
+    def get_XNK_data(self, type_of_file, date: str, limit, offset):
+        if type_of_file == "importer":
+            query = """
+            SELECT 
+                t.id as id,
+                t.mst as tax_code,
+                t.quantity as quantity,
+                t.unit_price as unit_price,
+                t.exchange_rate as exchange_rate,
+                t.amount as amount,
+                t.date as date,
+                t.exporter as exporter,
+                i.company AS importer,
+                i.address AS importer_address,
+                p.commodity as commodity,
+                p.hs_code as hs_code,
+                p.address as exporter_address,
+                p.country as country,
+                p.place_of_r as place_of_r,
+                p.place_of_l as place_of_l,
+                p.product_description as product_description
+            FROM transaction t
+            JOIN product_i p ON p.id = t.product_id
+            JOIN importer_i i ON i.mst = t.mst
+            WHERE t.date = :date
+            LIMIT :limit OFFSET :offset
+        """
+        elif type_of_file == "exporter":
+            query = """
+            SELECT 
+                t.id as id,
+                t.mst as tax_code,
+                t.quantity as quantity,
+                t.unit_price as unit_price,
+                t.exchange_rate as exchange_rate,
+                t.amount as amount,
+                t.date as date,
+                t.importer as importer,
+                e.company AS exporter,
+                e.address AS exporter_address,
+                p.commodity as commodity,
+                p.hs_code as hs_code,
+                p.address as importer_address,
+                p.country as country,
+                p.place_of_r as place_of_r,
+                p.place_of_l as place_of_l,
+                p.product_description as product_description
+            FROM transaction_e t
+            JOIN product_e p ON p.id = t.product_id
+            JOIN exporter_e e ON e.mst = t.mst
+            WHERE t.date = :date
+            LIMIT :limit OFFSET :offset
+        """
 
         # 2. SQL Execution
         
@@ -737,9 +766,13 @@ class SteelDatabaseManager:
 
         return data
     
-    def edit_value_in_DB(self, id, quantity, amount):
-        query = """
-            UPDATE transaction 
+    def edit_value_in_DB(self, type_of_file, id, quantity, amount):
+        if type_of_file == "importer":
+            table_transaction = "transaction"
+        elif type_of_file == "exporter":
+            table_transaction = "transaction_e"
+        query = f"""
+            UPDATE {table_transaction} 
             SET quantity = :quantity, amount = :amount 
             WHERE id = :id
         """
@@ -754,9 +787,13 @@ class SteelDatabaseManager:
             return {"success": False, "message": str(e)}
         
         
-    def delete_by_id(self, id: int):
-        query = """
-            DELETE FROM transaction 
+    def delete_by_id(self, type_of_file, id: int):
+        if type_of_file == "importer":
+            table_transaction = "transaction"
+        elif type_of_file == "exporter":
+            table_transaction = "transaction_e"
+        query = f"""
+            DELETE FROM {table_transaction} 
             WHERE id = :id
         """
         try:
