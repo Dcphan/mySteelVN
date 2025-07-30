@@ -13,14 +13,6 @@
 
 chỉ cần chạy Virtual Environment khi Test để dễ dàng xóa các Libraries vừa tải về.
 
-## 🌐 Các Trang Cần Test
-
-| Chức năng | Địa chỉ URL |
-|-----------|-------------|
-| Upload dữ liệu | http://localhost:8000/upload |
-| Biểu đồ Market Share (Pie Chart) | http://localhost:8000/chart/pie |
-| Biểu đồ theo thời gian (Line Chart) | http://localhost:8000/chart/bar |
-| Bảng tổng hợp theo tháng | http://localhost:8000/table/tonghopthang |
 
 ---
 
