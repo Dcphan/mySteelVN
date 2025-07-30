@@ -346,11 +346,15 @@ def filtering_data(
     data = db_manager.xnk_get_distinct_filter(type_of_file="exporter", filter=filter, date=date)
     return data
 
-@app.get("/xnk/data-record", response_class=HTMLResponse)
+@app.get("/importer/data-record", response_class=HTMLResponse)
 def data_record_page(request: Request):
     return templates.TemplateResponse("crud.html", {"request": request})
 
-@app.get("/xnk/api/data")
+@app.get("/exporter/data-record")
+def data_record_page(request: Request):
+    return templates.TemplateResponse("crud_export.html", {"request": request})
+
+@app.get("/importer/api/data")
 def get_data(
         date: str = Query(...),  
         limit: int = Query(100, ge=10, le=1000),
@@ -358,23 +362,38 @@ def get_data(
 
     ):
 
-    data = db_manager.get_XNK_data(date, limit, offset)
+    data = db_manager.get_XNK_data("importer",date, limit, offset)
+    return JSONResponse(content=data)
+
+@app.get("/exporter/api/data")
+def get_data(
+        date: str = Query(...),  
+        limit: int = Query(100, ge=10, le=1000),
+        offset: int = Query(0, ge=0) 
+
+    ):
+
+    data = db_manager.get_XNK_data("exporter",date, limit, offset)
     return JSONResponse(content=data)
 
 
-@app.put("/xnk/api/update")
+
+@app.put("/importer/api/update")
 def update_data(id: str=Query(...), quantity: str=Query(...), amount: str=Query(...)):
-    db_manager.edit_value_in_DB(id, quantity, amount)
+    db_manager.edit_value_in_DB("importer", id, quantity, amount)
     return {"message": "Transaction updated successfully", "id": id}
     
+@app.put("/exporter/api/update")
+def update_data(id: str=Query(...), quantity: str=Query(...), amount: str=Query(...)):
+    db_manager.edit_value_in_DB("exporter", id, quantity, amount)
+    return {"message": "Transaction updated successfully", "id": id}
 
-@app.delete("/xnk/api/delete")
+@app.delete("/importer/api/delete")
 def delete_data(id: str=Query(...)):
-    db_manager.delete_by_id(id)
+    db_manager.delete_by_id("importer", id)
     return {"message": "Transaction deleted successfully", "id": id}
 
-
-
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+@app.delete("/exporter/api/delete")
+def delete_data(id: str=Query(...)):
+    db_manager.delete_by_id("exporter", id)
+    return {"message": "Transaction deleted successfully", "id": id}

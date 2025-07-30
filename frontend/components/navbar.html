@@ -1,5 +1,5 @@
-<!-- templates/components/navbar.html -->
-<nav class="w-full bg-gray-800 text-white flex flex-wrap items-center justify-between px-4 py-3 shadow-md">
+<!-- navbar.html -->
+<nav class="w-full z-50 bg-gray-800 text-white flex flex-wrap items-center justify-between px-4 py-3 shadow-md">
   <!-- Logo -->
   <a href="/" class="flex items-center space-x-2">
     <div class="bg-white/10 backdrop-blur-md rounded-xl p-1 shadow-lg">
@@ -10,34 +10,67 @@
     <span class="hidden sm:inline font-semibold text-lg">Dashboard</span>
   </a>
 
-  <!-- Navigation Links -->
-  <div class="flex flex-wrap gap-3 mt-4 sm:mt-0 sm:ml-6">
-    <a href="/upload" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
-      <span>📤</span><span class="hidden sm:inline">Upload</span>
-    </a>
-    <a href="/chart/bar" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
-      <span>📊</span><span class="hidden sm:inline">Bar Chart</span>
-    </a>
-    <a href="/chart/pie" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
-      <span>🥧</span><span class="hidden sm:inline">Pie Chart</span>
-    </a>
-    <a href="/excel-tool" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
-      <span>📁</span><span class="hidden sm:inline">Export Excel</span>
-    </a>
-    <a href="/importer/upload" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
-      <span>📤</span><span class="hidden sm:inline">Upload</span>
-    </a>
-    <a href="/importer/pivot-table" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
-      <span>📊</span><span class="hidden sm:inline">Pivot Table</span>
-    </a>
-    <a href="/xnk/data-record" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
-      <span>🗃️</span><span class="hidden sm:inline">Data Record</span>
-    </a>
-    <a href="/exporter/upload" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
-      <span>📤</span><span class="hidden sm:inline">Upload</span>
-    </a>
-    <a href="/exporter/pivot-table" class="flex items-center space-x-1 hover:bg-gray-700 rounded-md px-3 py-2">
-      <span>📊</span><span class="hidden sm:inline">Pivot Table</span>
-    </a>
+  <!-- Menu Container -->
+  <div class="flex flex-wrap gap-4 mt-4 sm:mt-0 sm:ml-6 relative">
+
+    <!-- Chart Dropdown -->
+    <div class="relative dropdown">
+      <button class="dropdown-btn  flex items-center space-x-1 px-3 py-2 hover:bg-gray-700 rounded-md">
+        <span>📈</span><span class="hidden sm:inline">Sản Lượng</span>
+      </button>
+      <div class="dropdown-menu hidden absolute bg-gray-700 mt-2 rounded-md shadow-lg z-50">
+        <a href="/upload" class="block px-4 py-2 hover:bg-gray-600">📤 Upload </a>
+        <a href="/chart/bar" class="block px-4 py-2 hover:bg-gray-600">📊 Bar Chart</a>
+        <a href="/chart/pie" class="block px-4 py-2 hover:bg-gray-600">🥧 Pie Chart</a>
+        <a href="/excel-tool" class="block px-4 py-2 hover:bg-gray-600">📁 Export</a>
+      </div>
+    </div>
+
+    <!-- Importer Dropdown -->
+    <div class="relative dropdown">
+      <button class="dropdown-btn flex items-center space-x-1 px-3 py-2 hover:bg-gray-700 rounded-md">
+        <span>⬇️</span><span class="hidden sm:inline">Nhập Khẩu</span>
+      </button>
+      <div class="dropdown-menu hidden absolute bg-gray-700 mt-2 rounded-md shadow-lg z-50">
+        <a href="/importer/upload" class="block px-4 py-2 hover:bg-gray-600">📤 Upload</a>
+        <a href="/importer/pivot-table" class="block px-4 py-2 hover:bg-gray-600">📊 Pivot Table</a>
+        <a href="/importer/data-record" class="block px-4 py-2 hover:bg-gray-600">🗃️ Origin</a>
+      </div>
+    </div>
+
+    <!-- Exporter Dropdown -->
+    <div class="relative dropdown">
+      <button class="dropdown-btn flex items-center space-x-1 px-3 py-2 hover:bg-gray-700 rounded-md">
+        <span>⬆️</span><span class="hidden sm:inline">Xuất Khẩu</span>
+      </button>
+      <div class="dropdown-menu hidden absolute bg-gray-700 mt-2 rounded-md shadow-lg z-50">
+        <a href="/exporter/upload" class="block px-4 py-2 hover:bg-gray-600">📤 Upload</a>
+        <a href="/exporter/pivot-table" class="block px-4 py-2 hover:bg-gray-600">📊 Pivot Table</a>
+        <a href="/exporter/data-record" class="block px-4 py-2 hover:bg-gray-600">🗃️ Origin</a>
+      </div>
+    </div>
+
   </div>
 </nav>
+
+<!-- Dropdown Hover Fix Script -->
+<script>
+  document.querySelectorAll('.dropdown').forEach(dropdown => {
+    const btn = dropdown.querySelector('.dropdown-btn');
+    const menu = dropdown.querySelector('.dropdown-menu');
+
+    let timeout;
+
+    const showMenu = () => {
+      clearTimeout(timeout);
+      menu.classList.remove('hidden');
+    };
+
+    const hideMenu = () => {
+      timeout = setTimeout(() => menu.classList.add('hidden'), 200);
+    };
+
+    dropdown.addEventListener('mouseenter', showMenu);
+    dropdown.addEventListener('mouseleave', hideMenu);
+  });
+</script>

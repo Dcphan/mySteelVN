@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CRUD Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/x-icon" href="/static/img/favicon.png">
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen font-sans antialiased">
 
@@ -14,7 +15,7 @@
   <!-- MAIN CONTENT -->
   <div class="max-w-full mx-auto mt-6">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold text-gray-800">Company Management</h1>
+      <h1 class="text-3xl font-bold text-gray-800">Importer - Origin</h1>
       <div class="flex space-x-4">
         <label for="monthSelect" class="block mb-2">Select Month:</label>
         <input type="month" id="monthSelect" name="monthSelect" class="border px-2 py-1 rounded">
@@ -24,25 +25,35 @@
     <div class="w-full max-w-full overflow-x-auto">
       <div class="min-w-[120vw] h-[90vh] bg-white shadow rounded-lg">
         <table class="table-auto min-w-full text-sm text-left text-gray-700">
-          <thead class="sticky top-0 bg-gray-50 border-b text-xs uppercase tracking-wider">
+         <thead class="sticky top-0 bg-gray-50 border-b text-xs uppercase tracking-wider z-20">
             <tr>
-              <th class="px-6 py-3">#</th>
-              <th class="px-6 py-3">Date</th>
-              <th class="px-6 py-3">Tax Code</th>
-              <th class="px-6 py-3">Importer</th>
-              <th class="px-6 py-3">Importer Address</th>
-              <th class="px-6 py-3">Country</th>
-              <th class="px-6 py-3">Exporter</th>
-              <th class="px-6 py-3">Exporter Address</th>
-              <th class="px-6 py-3">HS Code</th>
-              <th class="px-6 py-3">Commodity</th>
-              <th class="px-6 py-3">Exchange Rate</th>
-              <th class="px-6 py-3">Unit Price</th>
-              <th class="px-6 py-3">Quantity</th>
-              <th class="px-6 py-3">Amount</th>
-              <th class="px-6 py-3">Action</th>
+              <th class="px-6 py-3 w-[100px]">#</th>
+              <th class="px-6 py-3 w-[120px]">Date</th>
+              <th class="px-6 py-3 w-[150px]">Tax Code</th>
+
+              <!-- Sticky column 1 -->
+              <th class="sticky left-0 w-[200px] bg-gray-50 z-20 px-6 py-3">Importer</th>
+
+              <th class="px-6 py-3 w-[180px]">Importer Address</th>
+
+              <!-- Sticky column 2 -->
+              <th class="sticky left-[200px] w-[200px] bg-gray-50 z-20 px-6 py-3">Country</th>
+
+              <th class="px-6 py-3 w-[180px]">Exporter</th>
+              <th class="px-6 py-3 w-[200px]">Exporter Address</th>
+              <th class="px-6 py-3 w-[100px]">HS Code</th>
+              <th class="px-6 py-3 w-[200px]">Commodity</th>
+              <th class="px-6 py-3 w-[120px]">Exchange Rate</th>
+              <th class="px-6 py-3 w-[120px]">Unit Price</th>
+              <th class="px-6 py-3 w-[100px]">Quantity</th>
+              <th class="px-6 py-3 w-[120px]">Amount</th>
+              <th class="px-6 py-3 w-[160px]">Place Of Receipt</th>
+              <th class="px-6 py-3 w-[160px]">Place Of Loading</th>
+              <th class="px-6 py-3 w-[240px]">Product Description</th>
+              <th class="px-6 py-3 w-[120px]">Action</th>
             </tr>
           </thead>
+
           <tbody id="data-table">
             <!-- Sample row -->
           </tbody>
