@@ -478,7 +478,9 @@ class SteelDatabaseManager:
         if type_of_file == "importer":
             COLUMN_TABLE_MAP = IMPORTER_COLUMN_TABLE_MAP
             join_query = "JOIN product_i p on p.id = t.product_id JOIN importer_i i on i.mst = t.mst"
+            transaction = "transaction"
         elif type_of_file == "exporter":
+            transaction = "transaction_e"
             join_query = "JOIN product_e p on p.id = t.product_id JOIN exporter_e e on e.mst = t.mst"
             COLUMN_TABLE_MAP = EXPORTER_COLUMN_TABLE_MAP
         else:
@@ -496,7 +498,7 @@ class SteelDatabaseManager:
             SELECT * FROM (
                 SELECT {alias}.{row_field},
                     {value_select_clause}
-                    FROM transaction t
+                    FROM {transaction} t
                     {join_query}
                     WHERE t.date = %s {condition}
                     GROUP BY {alias}.{row_field}
@@ -506,7 +508,7 @@ class SteelDatabaseManager:
                 SELECT
                     'TOTAL' as {row_field},
                     {value_select_clause}
-                    FROM transaction t
+                    FROM {transaction} t
                     {join_query}
                     WHERE t.date = %s {condition}
                     )
@@ -540,9 +542,11 @@ class SteelDatabaseManager:
         if type_of_file == "importer":
             COLUMN_TABLE_MAP = IMPORTER_COLUMN_TABLE_MAP
             join_query = "JOIN product_i p ON p.id = t.product_id JOIN importer_i i ON i.mst = t.mst"
+            transaction = "transaction"
         elif type_of_file == "exporter":
             COLUMN_TABLE_MAP = EXPORTER_COLUMN_TABLE_MAP
             join_query = "JOIN product_e p ON p.id = t.product_id JOIN exporter_e e ON e.mst = t.mst"
+            transaction = "transaction_e"
         else:
             raise ValueError(f"Invalid type_of_file: {type_of_file}")
         
@@ -590,7 +594,7 @@ class SteelDatabaseManager:
         # 6. Main base query
         base_query = f"""
             SELECT {{select_fields}}
-            FROM transaction t
+            FROM {transaction} t
             {join_query}
             WHERE {filter_condition}{in_condition}t.date = %s{exclude_null_condition}
             GROUP BY {{group_by}}
