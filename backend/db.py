@@ -37,7 +37,7 @@ TABLE_JOIN_SQL = {
     "transaction": "",
     "transaction_e": "",
     "product_e": """
-        JOIN transaction t ON p.id = t.product_id
+        JOIN transaction_e t ON p.id = t.product_id
     """,
     "product_i": """
         JOIN transaction t ON p.id = t.product_id
@@ -46,7 +46,7 @@ TABLE_JOIN_SQL = {
         JOIN transaction t ON i.mst = t.mst
     """,
     "exporter_e": """
-        JOIN transaction t ON e.mst = t.mst
+        JOIN transaction_e t ON e.mst = t.mst
     """
 }
 
