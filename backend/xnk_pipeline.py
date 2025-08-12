@@ -1,15 +1,13 @@
 import pandas as pd
 import os
-from backend.db import SteelDatabaseManager
+from backend.database.nhap_khau_database import NhapKhauDatabase
+from backend.database.xuat_khau_database import XuatKhauDatabase
 from backend.ETL_pipeline import parser, regex_pattern, country_detection, country_dictionary, hs_and_currency, hs_code, unit, unit_conversion, import_pipeline, export_pipeline
 
 class XNK_pipeline:
-    def __init__(self, file_path: str,
-                 dbname="neondb",
-                 user="neondb_owner",
-                 password="npg_3vSCDycG9jUQ"):
+    def __init__(self, file_path: str):
         self.file_path = file_path
-        self.db_manager = SteelDatabaseManager(dbname=dbname, user=user, password=password)
+        self.db_manager = None  # Will be set in import_function
         self.address_cols = []
         self.import_file = None
         self.average_usd_rate = None
@@ -19,7 +17,6 @@ class XNK_pipeline:
         self.import_file = pd.read_excel(self.file_path)
         print(self.import_file.columns)
 
-        # Detect which address format is used
         if all(col in self.import_file.columns for col in ['DIA CHI 1', 'DIA CHI 2', 'DIA CHI 3', 'DIA CHI 4']):
             self.address_cols = ['DIA CHI 1', 'DIA CHI 2', 'DIA CHI 3', 'DIA CHI 4']
         elif 'DIA CHI' in self.import_file.columns:
@@ -47,6 +44,7 @@ class XNK_pipeline:
         )
 
         convert_unit = unit.UnitConverter(unit_conversion.unit_conversion)
+
         if type_of_file == "importer":
             self.pipeline = import_pipeline.imported_pipeline(
                 self.file_path,
@@ -66,21 +64,19 @@ class XNK_pipeline:
                 convert_unit
             )
 
-
-
     def run_pipeline(self):
         return self.pipeline.produce_check_xlsx()
 
-
     def import_function(self, type_of_file):
         self.load_file()
-        
         self.calculate_usd_rate()
         self.build_pipeline(type_of_file)
-        importer_i_df, product_id_df, transaction_df = self.run_pipeline()
-        if type_of_file == "importer":
-            self.db_manager.add_importer_to_database(importer_i_df, product_id_df, transaction_df)
-        else:
-            self.db_manager.add_exporter_to_database(importer_i_df, product_id_df, transaction_df)
-        
+        entity_df, product_df, transaction_df = self.run_pipeline()
 
+        # Dynamically assign correct database
+        if type_of_file == "importer":
+            self.db_manager = NhapKhauDatabase()
+            self.db_manager.add_importer_to_database(entity_df, product_df, transaction_df)
+        else:
+            self.db_manager = XuatKhauDatabase()
+            self.db_manager.add_exporter_to_database(entity_df, product_df, transaction_df)

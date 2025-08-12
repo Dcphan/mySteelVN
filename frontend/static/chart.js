@@ -173,11 +173,20 @@ async function loadMarketShare() {
         return;
     }
 
+    console.log(checkboxes)
     // Use only the first product (if single selection) — or loop through later if needed
-    const productType = checkboxes[0].value;
+    const selectedProducts = Array.from(checkboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+// Convert array to comma-separated string for the query
+    const params = new URLSearchParams();
+    params.append("top_n", top_n_number);
+    selectedProducts.forEach(p => params.append("product_type", p)); // multiple values
+    params.append("date", month);
 
     try {
-        const response = await fetch(`/api/pie-market-share?top_n=${top_n_number}&product_type=${encodeURIComponent(productType)}&date=${month}`);
+        const response = await fetch(`/api/pie-market-share?${params.toString()}`);
         if (!response.ok) throw new Error("Lỗi khi gọi API");
 
         const pieData = await response.json();
@@ -214,7 +223,7 @@ async function loadMarketShare() {
                 plugins: {
                     title: {
                         display: true,
-                        text: `Thị phần: ${productType} - ${month}`,
+                        text: `Thị phần: ${selectedProducts.join(", ")} - ${month}`,
                         font: {
                             size: 20,
                             weight: 'bold'

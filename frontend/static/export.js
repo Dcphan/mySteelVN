@@ -1,3 +1,4 @@
+import { hosting } from "./config.js"
 const exportFileNameInput = document.getElementById('exportFileName');
 const downloadXLSXBtn = document.getElementById('downloadXLSXBtn');
 const messageBox = document.getElementById('messageBox');
@@ -6,8 +7,8 @@ const loadPreviewBtn = document.getElementById('loadPreviewBtn');
 const previewLoadingSpinner = document.getElementById('previewLoadingSpinner');
 const dataPreviewContent = document.getElementById('dataPreviewContent');
 
-const BACKEND_EXCEL_URL = 'https://mysteelvn.onrender.com/export-excel';
-const BACKEND_PREVIEW_URL = 'https://mysteelvn.onrender.com/get-all-pivot-data';
+const BACKEND_EXCEL_URL = `${hosting}/export-excel`;
+const BACKEND_PREVIEW_URL = `${hosting}/get-all-pivot-data`;
 
 function showMessage(message, type = 'info') {
     messageBox.textContent = message;

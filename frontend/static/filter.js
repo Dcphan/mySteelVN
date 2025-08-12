@@ -1,3 +1,4 @@
+import {hosting} from './config.js'
 function selector_function(companyData) {
   console.log(companyData)
   const container = document.getElementById("container");
@@ -73,7 +74,7 @@ function selector_function(companyData) {
 
  async function selector() {
       try {
-        const res = await fetch("https://mysteelvn.onrender.com/api/product-data");
+        const res = await fetch(`${hosting}/api/product-data`);
         if (!res.ok) throw new Error("Failed to fetch");
 
         const companyData = await res.json();
@@ -115,9 +116,9 @@ function pie_selector_function(productData) {
 }
 
 
-async function pie_selector() {
+export async function pie_selector() {
       try {
-        const res = await fetch("https://mysteelvn.onrender.com/api/product-option");
+        const res = await fetch(`${hosting}/api/product-option`);
         if (!res.ok) throw new Error("Failed to fetch");
 
         const data = await res.json();
@@ -126,6 +127,9 @@ async function pie_selector() {
         console.error("Error fetching company data:", err);
       }
     }
+
+window.selector = selector;
+window.pie_selector = pie_selector;
 
 
 
