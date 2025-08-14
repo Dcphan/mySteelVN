@@ -153,7 +153,7 @@ async function loadMore() {
 
 async function updateRecord(id, quantity, amount) {
   try {
-    const response = await fetch(`/xnk/api/update?id=${id}&quantity=${quantity}&amount=${amount}`, {
+    const response = await fetch(`/importer/api/update?id=${id}&quantity=${quantity}&amount=${amount}`, {
       method: "PUT",
     });
 
@@ -203,3 +203,8 @@ document.getElementById("load-more-btn").addEventListener("click", loadMore);
 
 // Initial load
 loadMore();
+window.editRow = editRow;
+window.deleteRow = deleteRow;
+window.updateRecord = updateRecord;
+window.closeModal = closeModal;
+window.openModal = openModal;
