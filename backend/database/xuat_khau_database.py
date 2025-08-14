@@ -148,6 +148,7 @@ class XuatKhauDatabase(BaseDBManager):
                     JOIN product_e p ON p.id = t.product_id
                     JOIN exporter_e e ON e.mst = t.mst
                     WHERE t.date = :date
+                    ORDER BY t.id
                     LIMIT :limit OFFSET :offset
                 """
                 result = conn.execute(text(query), {

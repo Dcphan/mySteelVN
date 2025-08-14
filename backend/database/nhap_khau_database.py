@@ -148,6 +148,7 @@ class NhapKhauDatabase(BaseDBManager):
                     JOIN product_i p ON p.id = t.product_id
                     JOIN importer_i i ON i.mst = t.mst
                     WHERE t.date = :date
+                    ORDER BY t.id
                     LIMIT :limit OFFSET :offset
                 """
                 result = conn.execute(text(query), {
@@ -190,6 +191,7 @@ class NhapKhauDatabase(BaseDBManager):
                     text(query),
                     {"id": id, "quantity": quantity, "amount": amount}
                 )
+                print(query)
             return {"success": True, "message": f"✅ Updated record with ID {id}"}
         except Exception as e:
             return {"success": False, "message": f"❌ Update failed: {e}"}
