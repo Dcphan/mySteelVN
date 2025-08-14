@@ -75,9 +75,12 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="/static/chart.js?v=3"></script>
-  <script src="/static/filter.js?v=3"></script>
+  <script type="module" src="/static/filter.js?v=3"></script>
   <script>
-    window.onload = selector;
+    window.addEventListener("DOMContentLoaded", () => {
+  selector();
+  pie_selector();
+});
   </script>
 </body>
 </html>

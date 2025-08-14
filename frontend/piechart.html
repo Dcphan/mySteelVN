@@ -51,9 +51,11 @@
   </div>
 
   <script src="/static/chart.js"></script>
-  <script src="/static/filter.js"></script>
-  <script>
-    window.onload = pie_selector;
-  </script>
+  <script type = "module" src="/static/filter.js"></script>
+  <script type="module">
+  import { pie_selector } from "/static/filter.js";
+
+  window.onload = pie_selector;
+</script>
 </body>
 </html>

@@ -1,6 +1,20 @@
 import {fetchAndRenderTable, loadFilterOptions, loadRowOptions} from './summary.js'
 
 let tomSelectInstance = null;
+
+function getSelectedDate() {
+    let dateInput = document.getElementById("date");
+  
+    return dateInput.value
+        ? dateInput.value + "-01"
+        : null; // null = all dates
+}
+
+function getSelectedFilters(){
+    let filterSelect = document.getElementById("filterSelect");
+    return filterSelect.value;
+}
+
 function getCurrentPivotConfig() {
   const getZoneFields = (zoneId) => { 
     const zone = document.getElementById(zoneId);
@@ -85,15 +99,7 @@ function changeFilterTable(){
         fetchAndRenderTable(filters, rows, values); // <-- your function to update the table
     };
 
-    // Select/Deselect buttons
-    buttonSelectAllItem.textContent = "Select All";
-    buttonSelectAllItem.onclick = selectAllItems;
-    buttonSelectAllItem.className = "text-blue-600 hover:underline";
-
-    buttonDeselectAllItem.textContent = "Deselect All";
-    buttonDeselectAllItem.onclick = deselectAllItems;
-    buttonDeselectAllItem.className = "text-red-600 hover:underline";
-
+    
 
     // Append to container
     filterRowDiv.appendChild(label);
@@ -108,8 +114,6 @@ function changeFilterTable(){
       th.textContent = row;
       tableHeader.append(th)
     }
-    
-}
 
     for (const value of values){
       const th = document.createElement("th");
@@ -136,33 +140,48 @@ function changeFilterTable(){
     dateDiv.appendChild(dateInput);
 
     // RENDER BUTTON 
-    const renderButton = document.createElement("button");
-    renderButton.textContent = "Render";
-    renderButton.onclick = fetchAndRenderTable;
-    renderButton.className = "h-10 bg-blue-600 text-white px-4 rounded hover:bg-blue-700 mt-4";
-
+   
     // Add all the feature to the filterInput Div
 
     const rowAndButtonWrapper = document.createElement("div");
     rowAndButtonWrapper.className = "w-full flex gap-4 items-end"; // full line, keeps row+button aligned
 
     rowAndButtonWrapper.appendChild(filterRowDiv);
-    rowAndButtonWrapper.appendChild(renderButton);
-
-
-
-
     
     filterInput.appendChild(dateDiv);
     filterInput.appendChild(filterZoneDiv);
     filterInput.appendChild(filterRowDiv);
-    filterInput.appendChild(renderButton);
 
-    loadRowOptions(rows[0]);
-    loadFilterOptions(filters[0]);
+    // Run once when filter table is built
+  loadRowOptions(rows[0], getSelectedDate());
+  loadFilterOptions(filters[0], getSelectedDate());
 
 
-}
+  // Listen for date changes
+  dateInput.addEventListener("change", () => {
+      const selectedDate = getSelectedDate();
+      console.log(selectedDate);
+      console.log("Selected date:", selectedDate);
+
+      loadFilterOptions(filters[0], selectedDate);
+      loadRowOptions(rows[0], selectedDate);
+      fetchAndRenderTable(filters, rows, values);
+      console.log("Function is called");
+  });
+
+  filterSelect.addEventListener("change", () => {
+    const selectedDate = getSelectedDate();
+    const selectedFilters = getSelectedFilters();
+    console.log(filters[0])
+    console.log(selectedFilters);
+    loadRowOptions(rows[0], selectedDate, filters[0],selectedFilters);
+    console.log("Filter Input is Call")
+
+  }
+);
+
+
+}};
 
 
 function drag_and_drop() {
@@ -239,7 +258,8 @@ function drag_and_drop() {
 
 
 // Initialize drag-and-drop when DOM is ready
-document.addEventListener("DOMContentLoaded", async() => {
+document.addEventListener("DOMContentLoaded", async () => {
   drag_and_drop();
- } );
+});
+
  window.changeFilterTable = changeFilterTable;

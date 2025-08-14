@@ -5,8 +5,10 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Any, Optional
-from backend.table_db import TableDatabase
-from backend.db import SteelDatabaseManager
+from backend.database.nhap_khau_database import NhapKhauDatabase
+from backend.database.san_luong_db import SanLuongDatabase
+from backend.database.xuat_khau_database import XuatKhauDatabase
+
 from backend.Import import SteelDataProcessor
 from pydantic import BaseModel
 from pathlib import Path
@@ -44,9 +46,11 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
-db_manager = SteelDatabaseManager(dbname="neondb", user="neondb_owner", password="npg_3vSCDycG9jUQ")
-table_db = TableDatabase(dbname="neondb", user="neondb_owner", password="npg_3vSCDycG9jUQ")
-export_handler = Export(dbname="neondb", user="neondb_owner", password="npg_3vSCDycG9jUQ")
+SAN_LUONG_DB = SanLuongDatabase()
+NHAP_KHAU_DB = NhapKhauDatabase()
+XUAT_KHAU_DB = XuatKhauDatabase()
+
+
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
@@ -95,7 +99,7 @@ def get_monthly_summary(
     start: str = Query(...),
     end: str = Query(...)
 ):
-    return db_manager.get_data(table, product, start, end)
+    return SAN_LUONG_DB.get_data(table, product, start, end)
 
 
 @app.get("/chart/pie", response_class=HTMLResponse)
@@ -103,18 +107,22 @@ async def pie_chart_page(request: Request):
     return templates.TemplateResponse("piechart.html", {"request": request})
 
 @app.get("/api/pie-market-share")
-def get_market_share(top_n: int, product_type: str, date: str):
-    return JSONResponse(content = db_manager.pie_market_share(top_n,product_type, date))
+def get_market_share(
+    top_n: int,
+    product_type: List[str] = Query(...),  
+    date: str = Query(...)
+):
+    return JSONResponse(content = SAN_LUONG_DB.pie_market_share(top_n,product_type, date))
 
 @app.get("/api/product-data")
 def get_product_data():
-    data = table_db.get_product_and_company()
+    data = SAN_LUONG_DB.get_product_and_company()
     print("Returned product data:", data)
     return data
 
 @app.get("/api/product-option")
 def get_product_option():
-    data = table_db.get_product()
+    data = SAN_LUONG_DB.get_product()
     return data
 
 
@@ -129,7 +137,7 @@ async def export_excel(filename: str = "san_luong_report.xlsx"):
 
     excel_output_path = downloads_path / filename
 
-    success = export_handler.convert_to_excel(str(excel_output_path))
+    success = SAN_LUONG_DB.convert_to_excel(str(excel_output_path))
 
     if success:
         if not excel_output_path.exists():
@@ -148,7 +156,7 @@ async def export_excel(filename: str = "san_luong_report.xlsx"):
 async def get_all_pivot_data():
 
     try:
-        data = export_handler.get_all_pivot_data()
+        data = SAN_LUONG_DB.get_all_pivot_data()
         if not data:
             return JSONResponse(content={}, status_code=200)
         return JSONResponse(content=data)
@@ -164,7 +172,7 @@ async def read_dashboard(request: Request):
 @app.get("/api/table-data")
 def get_table_data(products: str = Query(...), month: str = Query(...)):
     product_list = products.split(",")
-    return db_manager.table_data(product_list, month)
+    return SAN_LUONG_DB.table_data(product_list, month)
 
 @app.get("/table/tonghopthang", response_class=HTMLResponse)
 async def read_dashboard(request: Request):
@@ -177,11 +185,11 @@ def get_monthly_summary(
     start: str = Query(...),
     end: str = Query(...)
 ):
-    return table_db.get_month_summary(table, product, start, end)
+    return SAN_LUONG_DB.get_month_summary(table, product, start, end)
 
 @app.get("/api/product-data")
 def get_product_data():
-    data = table_db.get_product_and_company()
+    data = SAN_LUONG_DB.get_product_and_company()
     print("Returned product data:", data)
     return data
 
@@ -269,11 +277,11 @@ def pivot_summary(
         examples={"example": {"value": "Alloy Bar"}}
     ),
     rows_field: List[str] = Query(default=["country", "company"]),
-    rows_value: List[str] = Query(default=["Japan", "China"]),
+    rows_value: List[str] = Query(default = None),
     value_fields: List[str] = Query(default=["quantity", "amount"]),
     date: str = Query(default="2025-05")
 ):
-    data = db_manager.xnk_get_info(
+    data = NHAP_KHAU_DB.xnk_get_info(
         type_of_file="importer",
         filter_field=filter_field,
         filter_value=filter_value,
@@ -295,11 +303,11 @@ def pivot_summary(
         examples={"example": {"value": "Alloy Bar"}}
     ),
     rows_field: List[str] = Query(default=["country", "company"]),
-    rows_value: List[str] = Query(default=["Japan", "China"]),
+    rows_value: List[str] = Query(default=None),
     value_fields: List[str] = Query(default=["quantity", "amount"]),
     date: str = Query(default="2025-05")
 ):
-    data = db_manager.xnk_get_info(
+    data = XUAT_KHAU_DB.xnk_get_info(
         type_of_file="exporter",
         filter_field=filter_field,
         filter_value=filter_value,
@@ -312,12 +320,12 @@ def pivot_summary(
 
 @app.get("/api/importer-single-pivot-summary")
 def pivot_country_summary(row_field: str=Query(...), date: str=Query(...), item: Optional[List]=Query(None), value_fields: List[str]=Query(...)):
-    data = db_manager.xnk_get_total_data(type_of_file="importer",row_field=row_field, date=date, items=item, value_fields=value_fields)
+    data = NHAP_KHAU_DB.xnk_get_total_data(row_field=row_field, date=date, items=item, value_fields=value_fields)
     return data
 
 @app.get("/api/exporter-single-pivot-summary")
 def pivot_country_summary(row_field: str=Query(...), date: str=Query(...), item: Optional[List]=Query(None), value_fields: List[str]=Query(...)):
-    data = db_manager.xnk_get_total_data(type_of_file="exporter",row_field=row_field, date=date, items=item, value_fields=value_fields)
+    data = XUAT_KHAU_DB.xnk_get_total_data(row_field=row_field, date=date, items=item, value_fields=value_fields)
     return data
 
 
@@ -334,16 +342,20 @@ def read_table(request: Request):
 def filtering_data(
     filter: str = Query(default=None),
     date: str = Query(default=None),
+    filter_value: str= Query(default=None),
+    filter_header: str = Query(default=None)
 ):
-    data = db_manager.xnk_get_distinct_filter(type_of_file="importer", filter=filter, date=date)
+    data = NHAP_KHAU_DB.xnk_get_distinct_filter(type_of_file="importer", filter=filter, date=date, filter_value=filter_value, filter_header=filter_header)
     return data
 
 @app.get("/api/exporter-filtering-data")
 def filtering_data(
     filter: str = Query(default=None),
     date: str = Query(default=None),
+    filter_header: str = Query(default=None),
+    filter_value: str = Query(default=None),
 ):
-    data = db_manager.xnk_get_distinct_filter(type_of_file="exporter", filter=filter, date=date)
+    data = XUAT_KHAU_DB.xnk_get_distinct_filter(type_of_file="exporter", filter=filter, date=date, filter_value=filter_value, filter_header=filter_header)
     return data
 
 @app.get("/importer/data-record", response_class=HTMLResponse)
@@ -362,7 +374,7 @@ def get_data(
 
     ):
 
-    data = db_manager.get_XNK_data("importer",date, limit, offset)
+    data = NHAP_KHAU_DB.get_XNK_data(date, limit, offset)
     return JSONResponse(content=data)
 
 @app.get("/exporter/api/data")
@@ -373,27 +385,27 @@ def get_data(
 
     ):
 
-    data = db_manager.get_XNK_data("exporter",date, limit, offset)
+    data = XUAT_KHAU_DB.get_XNK_data(date, limit, offset)
     return JSONResponse(content=data)
 
 
 
 @app.put("/importer/api/update")
 def update_data(id: str=Query(...), quantity: str=Query(...), amount: str=Query(...)):
-    db_manager.edit_value_in_DB("importer", id, quantity, amount)
+    NHAP_KHAU_DB.edit_value_in_DB(id, quantity, amount)
     return {"message": "Transaction updated successfully", "id": id}
     
 @app.put("/exporter/api/update")
 def update_data(id: str=Query(...), quantity: str=Query(...), amount: str=Query(...)):
-    db_manager.edit_value_in_DB("exporter", id, quantity, amount)
+    XUAT_KHAU_DB.edit_value_in_DB(id, quantity, amount)
     return {"message": "Transaction updated successfully", "id": id}
 
 @app.delete("/importer/api/delete")
 def delete_data(id: str=Query(...)):
-    db_manager.delete_by_id("importer", id)
+    NHAP_KHAU_DB.delete_by_id(id)
     return {"message": "Transaction deleted successfully", "id": id}
 
 @app.delete("/exporter/api/delete")
 def delete_data(id: str=Query(...)):
-    db_manager.delete_by_id("exporter", id)
+    XUAT_KHAU_DB.delete_by_id(id)
     return {"message": "Transaction deleted successfully", "id": id}

@@ -1,12 +1,12 @@
-
+import { hosting } from "../config.js";
     let tomSelectInstance = null;
 
-    export async function loadFilterOptions(filter) {
-    const url = new URL('https://mysteelvn.onrender.com/api/importer-filtering-data'); 
+    export async function loadFilterOptions(filter, date) {
+    const url = new URL(`${hosting}/api/importer-filtering-data`); 
     url.searchParams.set("filter", filter);
+    url.searchParams.set("date", date);
     const res = await fetch(url);
     const options = await res.json();
-
     const datalist = document.getElementById("filterOptions");
     datalist.innerHTML = ''; // clear previous options
 
@@ -18,29 +18,49 @@
     }
 
     
-    export async function loadRowOptions(filter) {
-      const url = new URL('https://mysteelvn.onrender.com/api/importer-filtering-data'); 
-      url.searchParams.set("filter", filter);
-      const res = await fetch(url);
-      const options = await res.json();
-
-      const select = document.getElementById("rowSelect");
-      select.innerHTML = '';
-
-      options.forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt;
-        option.textContent = opt;
-        select.appendChild(option);
-      });
-
-      if (tomSelectInstance) tomSelectInstance.destroy();
-      tomSelectInstance = new TomSelect("#rowSelect", {
-        plugins: ['remove_button'],
-        persist: false,
-        create: false
-      });
+   export async function loadRowOptions(filter, date, filter_header, filter_value) {
+  const url = new URL(`${hosting}/api/importer-filtering-data`);
+  url.searchParams.set("date", date);
+  url.searchParams.set("filter", filter);
+  if (filter_value){
+      url.searchParams.set("filter_header", filter_header);
+      url.searchParams.set("filter_value", filter_value);
     }
+
+  const res = await fetch(url);
+  const options = await res.json();
+
+  const selectEl = document.getElementById("rowSelect");
+
+  // Destroy old instance if exists
+  if (tomSelectInstance) {
+    tomSelectInstance.destroy();
+    tomSelectInstance = null;
+  }
+
+  // Create new TomSelect
+tomSelectInstance = new TomSelect(selectEl, {
+      plugins: {
+		'checkbox_options': {
+			'checkedClassNames':   ['ts-checked'],
+			'uncheckedClassNames': ['ts-unchecked'],
+		    },
+    'clear_button':{
+			'title':'Remove all selected options',
+		}
+      },
+    
+      persist: false,
+      create: false
+    });
+  // Add new options
+  options.forEach(opt => {
+    tomSelectInstance.addOption({ value: opt, text: opt });
+  });
+
+  // Refresh
+  tomSelectInstance.refreshOptions(false);
+}
 
 
    function toggleCompanies(value) {
@@ -67,17 +87,19 @@
         filter = filterSelect.value;
       }
 
-      const date = document.getElementById("date").value;
+      let date = document.getElementById("date").value;
       const rows = tomSelectInstance ? tomSelectInstance.getValue() : [];
 
       if (!date) {
         alert("Please fill in the date filter.");
         return;
       }
+
+      date+="-01";
       
       if (rows_fields.length > 1) {
         
-      const url = new URL("https://mysteelvn.onrender.com/api/importer-pivot-data");
+      const url = new URL(`${hosting}/api/importer-pivot-data`);
 
       // Only set filter_field if provided
       if (filter_fields !== null && filter_fields !== undefined) {
@@ -92,7 +114,10 @@
       rows_fields.forEach(r => url.searchParams.append("rows_field", r));
       values_fields.forEach(r => url.searchParams.append("value_field", r));
       url.searchParams.set("date", date);
-      rows.forEach(r => url.searchParams.append("rows_value", r));
+      if (rows || rows.length>0){
+        rows.forEach(r => url.searchParams.append("rows_value", r));
+      }
+      
 
       const res = await fetch(url);
       const data = await res.json();
@@ -101,21 +126,18 @@
       fetchTableWithTwoRows(filter_fields, rows_fields, values_fields, data);
 
       } else if ( rows_fields.length == 1) {
-        const url = new URL("https://mysteelvn.onrender.com/api/importer-single-pivot-summary");
+        const url = new URL(`${hosting}/api/importer-single-pivot-summary`);
         url.searchParams.set("row_field", rows_fields[0]);
         url.searchParams.set("date", date);
-        rows.forEach(r => url.searchParams.append("item", r));
+        if (rows || rows.length>0){
+            rows.forEach(r => url.searchParams.append("item", r));
+        }
+        
         values_fields.forEach(v => url.searchParams.append("value_fields", v));
         const res = await fetch(url);
         const data = await res.json();
-        fetchTableWithOneRow(filter_fields, rows_fields, values_fields, data);
-        
-
-        
-      }
-
-
-      
+        fetchTableWithOneRow(filter_fields, rows_fields, values_fields, data);          
+      }      
     }
 
     async function fetchTableWithOneRow(filter_fields, rows_fields, values_fields, data){
@@ -142,11 +164,7 @@
         tableBody.appendChild(tr);
 
       });
-
-      
-        
-
-      
+     
     }
 
     async function fetchTableWithTwoRows(filter_fields, rows_fields, values_fields, data){      

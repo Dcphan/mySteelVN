@@ -1,3 +1,5 @@
+import { hosting } from "../config.js";
+
 let offset = 0;
 const limit = 100;
 let selectedDate = null;
@@ -69,7 +71,7 @@ async function fetchData(date, limit, offset) {
   if (limit < 1 || limit > 1000) throw new Error("Limit must be between 1 and 1000");
   if (offset < 0) throw new Error("Offset cannot be negative");
 
-  const url = new URL("https://mysteelvn.onrender.com/importer/api/data");
+  const url = new URL(`${hosting}/importer/api/data`);
   url.searchParams.set("date", date);
   url.searchParams.set("offset", offset);
   url.searchParams.set("limit", limit);
@@ -90,6 +92,7 @@ async function loadMore() {
     console.warn("Month not selected yet");
     return;
   }
+  selectedDate += "-01";
 
   const data = await fetchData(selectedDate, limit, offset);
   const tableBody = document.getElementById("data-table");

@@ -3,7 +3,7 @@ import os
 import re
 from datetime import datetime
 import uuid
-from backend.db import SteelDatabaseManager
+from backend.database.san_luong_db import SanLuongDatabase
 
 
 class SteelDataProcessor:
@@ -12,7 +12,7 @@ class SteelDataProcessor:
         self.skiprows = skiprows
         self.df = None
         self.date = self.extract_date_from_filename()
-        self.db_manager = SteelDatabaseManager(dbname="neondb", user="neondb_owner", password="npg_3vSCDycG9jUQ")
+        self.db_manager = SanLuongDatabase()
 
         # Output DataFrames
         self.product_df = pd.DataFrame(columns=['id', 'producttype', 'companyname'])
@@ -148,4 +148,4 @@ class SteelDataProcessor:
         self.reformat()
         self.process_all_rows()
         self.db_manager.save_dataframes(self.product_df, self.production_df, self.inventory_df, self.consumption_df)
-        self.db_manager.close()
+        
