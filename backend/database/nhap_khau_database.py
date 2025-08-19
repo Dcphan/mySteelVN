@@ -207,7 +207,8 @@ class NhapKhauDatabase(BaseDBManager):
             }
         except Exception as e:
             return {"success": False, "message": f"❌ Delete failed: {e}"}
-        
+
+# Pivot Table    
     def xnk_get_total_data(self, row_field, date, items, value_fields):
         COLUMN_TABLE_MAP = IMPORTER_COLUMN_TABLE_MAP
         join_query = (
