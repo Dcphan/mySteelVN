@@ -5,6 +5,73 @@ from datetime import datetime
 import uuid
 from backend.database.san_luong_db import SanLuongDatabase
 
+TRANSLATION_MAP = {
+    # Products
+    "thép cán nóng": "hot steel coil",
+    "thép cán nguội": "cool steel coil",
+    "thép ống đen": "steel black pipe",
+    "thép ống mạ": "steel coated pipe",
+    "tôn mạ kẽm": "steel gal",
+    "tôn mạ màu": "steel painted",
+    "tôn mạ khác": "steel other",
+
+    # Regions
+    "tổng": "Total",
+    "miền bắc": "Northern",
+    "miền trung": "Central",
+    "miền nam": "Southern",
+    "xuất khẩu": "Export",
+    "tồn kho": "Inventory",
+    "sản xuất": "Production",
+    "tiêu thụ": "Consumption",
+    "tên công ty": "Company Name"
+}
+
+COMPANY_TRANSLATION_MAP = {
+    # Steel Coil
+    "Hòa Phát": "Hoa Phat Group",
+    "Đại Thiên Lộc": "Dai Thien Loc",
+    "Tôn Đông Á": "Ton Dong A",
+    "Thép tấm lá Thống Nhất": "Thong Nhat Flat Steel",
+    "China Steel & Nippon Steel Việt Nam": "China Steel & Nippon Steel",
+    "Tôn Hoa Sen": "Hssc",
+    "Thép Tấm Lá Phú Mỹ - Vnsteel": "Pfs Co.,Ltd",
+    
+    # Pipe
+    "đại thiên lộc": "Dai Thien Loc",
+    "tôn đông á": "Ton Dong A",
+    "hòa phát": "Hoa Phat Group",
+    "tập đoàn hoa sen": "Hoa Sen Group",
+    "thép nam kim": "Nam Kim Steel",
+    "mạ kẽm công nghiệp vingal-vnsteel": "Vingal Industries",
+    "tvp steel": "Tvp Steel",
+    "doanh nghiệp khác": "Other Company",
+    "sản xuất thép việt đức": "Vietnam Germany Steel",
+    "sản xuất và thương mại minh ngọc": "Mn Co., Ltd",
+    "chinh dai industrial co., ltd": "Chinh Dai Industrial Co., Ltd",
+    "thép seah việt nam": "SEAH Vietnam",
+    "ống thép 190": "190 Steel Pipes",
+    "s - steel co., ltd": "S - Steel Co., Ltd",
+    "công ty cổ phần maruichi sun steel": "MARUICHI SUN STEEL JOINT STOCK COMPANY",
+    "vinapipe": "Vinapipe",
+
+    # Sheet
+    "Tôn Phương Nam": "Southern Steel Sheet",
+    "Gia Công Và Dịch Vụ Thép Sài Gòn": "Sgc",
+    "Perstima Việt Nam": "Perstima Vietnam"
+
+
+}
+
+ALL_PRODUCTS = [
+    "hot steel coil", "cool steel coil", "steel black pipe", 
+    "steel coated pipe", "steel gal", "steel painted", "steel other",
+    "steel bar", "steel shape", "steel wire rod"
+]
+
+ALL_REGIONS = ["Northern", "Central", "Southern", "Export"]
+ALL_METRICS = ["Production", "Consumption", "Inventory"]
+
 
 class SteelDataProcessor:
     def __init__(self, file_path, skiprows=7):
@@ -72,6 +139,23 @@ class SteelDataProcessor:
             standardized = date_obj.strftime("%Y-%m")
             return standardized
         return None
+    
+    def _translate_dataframe(self):
+        df = self.df.applymap(lambda x: str(x).strip().lower() if pd.notnull(x) else x)
+
+        df = df.replace(TRANSLATION_MAP)
+
+        if "Company Name" in df.columns:
+            df["Company Name"] = df["Company Name"].replace(COMPANY_TRANSLATION_MAP)
+
+        df.rename(columns=lambda x: TRANSLATION_MAP.get(x, x), inplace=True)
+
+        self.df = df
+
+    def _fill_missing_rows(self):
+        return self.df.fillna(0)
+
+
 
     def process_all_rows(self):
         if self.df is None:
@@ -80,6 +164,8 @@ class SteelDataProcessor:
 
         for i in range(3, len(self.df)):  # Bỏ qua 3 hàng đầu
             self._process_single_row(i)
+        
+        print("All rows processed.")
 
     def _process_single_row(self, index):
         try:
@@ -90,7 +176,7 @@ class SteelDataProcessor:
                 return str(name).strip().lower()
 
             name = normalize(self.df['Company Name'][index])
-            target_products = ["hot steel coil", "cool steel coil","steel black pipe", "steel coated pipe","steel gal", "steel painted", "steel other"]
+            target_products = ["hot steel coil", "cool steel coil","steel black pipe", "steel coated pipe","steel gal", "steel painted", "steel other", "steel bar", "steel shape", "steel wire rod"]
 
             if name in target_products:
                 # Walk back to find the most recent company name
@@ -146,6 +232,13 @@ class SteelDataProcessor:
     def import_function(self):
         self.load_data()
         self.reformat()
+        self._fill_missing_rows()
+
         self.process_all_rows()
-        self.db_manager.save_dataframes(self.product_df, self.production_df, self.inventory_df, self.consumption_df)
-        
+
+        self.db_manager.save_dataframes(
+            self.product_df, 
+            self.production_df, 
+            self.inventory_df, 
+            self.consumption_df
+        )
